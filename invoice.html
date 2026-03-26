@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    // Password gate — runs before anything renders
+    (function() {
+      const PASS = 'Poptart';
+      const stored = sessionStorage.getItem('rfp_invoice_auth');
+      if (stored === PASS) return; // already authenticated this session
+
+      // Inject gate UI
+      document.addEventListener('DOMContentLoaded', function() {
+        const gate = document.createElement('div');
+        gate.id = 'rfp-gate';
+        gate.style.cssText = 'position:fixed;inset:0;background:#080807;z-index:99999;display:flex;align-items:center;justify-content:center;font-family:Montserrat,sans-serif;';
+        gate.innerHTML = `
+          <div style="text-align:center;padding:48px 32px;max-width:380px;width:100%;">
+            <p style="font-family:\'Cormorant Garamond\',serif;font-size:2rem;font-weight:300;color:#c9a84c;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">Rockwell</p>
+            <p style="font-size:0.62rem;letter-spacing:0.3em;text-transform:uppercase;color:#6b6555;margin-bottom:40px;">Film & Photo</p>
+            <p style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#6b6555;margin-bottom:16px;">Enter Password to View Invoice</p>
+            <input id="rfp-pass" type="password" placeholder="Password"
+              style="width:100%;background:#1c1a12;border:1px solid rgba(201,168,76,0.3);color:#f5f2ea;font-family:Montserrat,sans-serif;font-size:0.85rem;padding:14px 18px;outline:none;margin-bottom:12px;box-sizing:border-box;"
+              onkeydown="if(event.key==='Enter')document.getElementById('rfp-submit').click()" />
+            <button id="rfp-submit"
+              style="width:100%;background:#c9a84c;border:none;color:#080807;font-family:Montserrat,sans-serif;font-size:0.65rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;padding:16px;cursor:pointer;"
+              onclick="(function(){
+                const val = document.getElementById('rfp-pass').value;
+                const err = document.getElementById('rfp-err');
+                if(val === '${PASS}') {
+                  sessionStorage.setItem('rfp_invoice_auth','${PASS}');
+                  document.getElementById('rfp-gate').remove();
+                } else {
+                  err.style.display='block';
+                  document.getElementById('rfp-pass').value='';
+                  document.getElementById('rfp-pass').focus();
+                }
+              })()">View Invoice</button>
+            <p id="rfp-err" style="display:none;color:#e08080;font-size:0.7rem;letter-spacing:0.1em;margin-top:12px;">Incorrect password. Please try again.</p>
+          </div>`;
+        document.body.prepend(gate);
+        document.getElementById('rfp-pass').focus();
+      });
+    })();
+  </script>
+  <title>Rockwell Film & Photo — Invoice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    :root {
+      --black: #080807;
+      --dark: #111009;
+      --mid: #1c1a12;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a3;
+      --gold-dim: #7a6530;
+      --white: #f5f2ea;
+      --muted: #6b6555;
+      --sans: 'Montserrat', sans-serif;
+      --serif: 'Cormorant Garamond', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 60px 24px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .logo {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .logo em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .logo-sub {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .gold-line {
+      width: 80px;
+      height: 1px;
+      background: var(--gold);
+      margin: 20px auto;
+      opacity: 0.6;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 48px;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tab {
+      padding: 12px 32px;
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.3s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    .tab:hover { color: var(--gold-light); }
+
+    /* ── PANELS ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── FORM ── */
+    .form-wrap {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+    }
+
+    .form-section-title {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--gold);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-row.single { grid-template-columns: 1fr; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input, select, textarea {
+      background: var(--mid);
+      border: 1px solid rgba(201,168,76,0.2);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.3s;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--gold);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--muted);
+    }
+
+    select option { background: var(--dark); }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* ── LINE ITEMS ── */
+    .line-items {
+      border: 1px solid rgba(201,168,76,0.15);
+      margin-bottom: 16px;
+    }
+
+    .line-item {
+      display: grid;
+      grid-template-columns: 1fr 80px 100px 36px;
+      gap: 0;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      align-items: center;
+    }
+
+    .line-item:last-child { border-bottom: none; }
+
+    .line-item input {
+      border: none;
+      border-right: 1px solid rgba(201,168,76,0.1);
+      border-radius: 0;
+    }
+
+    .line-item input:last-of-type { border-right: none; }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0 10px;
+      transition: color 0.2s;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .remove-btn:hover { color: #e05555; }
+
+    .line-header {
+      display: grid;
+      grid-template-columns: 1fr 80px 100px 36px;
+      gap: 0;
+      padding: 8px 14px;
+      background: rgba(201,168,76,0.05);
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+
+    .line-header span {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .add-line-btn {
+      background: none;
+      border: 1px dashed rgba(201,168,76,0.3);
+      color: var(--gold);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 24px;
+    }
+
+    .add-line-btn:hover {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.05);
+    }
+
+    /* ── TOTALS ── */
+    .totals {
+      border-top: 1px solid rgba(201,168,76,0.2);
+      padding-top: 20px;
+      margin-bottom: 32px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .total-row.grand {
+      color: var(--white);
+      font-size: 1.1rem;
+      font-family: var(--serif);
+      padding-top: 12px;
+      margin-top: 6px;
+      border-top: 1px solid rgba(201,168,76,0.2);
+    }
+
+    .total-row.grand span:last-child { color: var(--gold); }
+
+    /* ── DEPOSIT TOGGLE ── */
+    .deposit-wrap {
+      background: var(--mid);
+      border: 1px solid rgba(201,168,76,0.15);
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+
+    .deposit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .deposit-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .toggle input[type="checkbox"] { display: none; }
+
+    .toggle-track {
+      width: 40px;
+      height: 22px;
+      background: var(--dark);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 11px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .toggle input:checked + .toggle-track { background: var(--gold-dim); border-color: var(--gold); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .toggle input:checked ~ .toggle-track .toggle-thumb,
+    .toggle input:checked + .toggle-track .toggle-thumb {
+      left: 21px;
+      background: var(--gold);
+    }
+
+    .deposit-options { display: none; }
+    .deposit-options.visible { display: block; }
+
+    .deposit-presets {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      background: none;
+      border: 1px solid rgba(201,168,76,0.25);
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.1em;
+    }
+
+    .preset-btn.active, .preset-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201,168,76,0.05);
+    }
+
+    /* ── SUBMIT ── */
+    .submit-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .submit-btn:hover { background: var(--gold-light); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── PREVIEW ── */
+    .invoice-preview {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #faf9f6;
+      color: #1a1a1a;
+      padding: 60px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 2px solid #1a1a1a;
+    }
+
+    .preview-logo {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      color: #1a1a1a;
+      letter-spacing: 0.08em;
+    }
+
+    .preview-logo span { color: var(--gold-dim); }
+
+    .preview-invoice-no {
+      text-align: right;
+      font-family: var(--sans);
+    }
+
+    .preview-invoice-no .label {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 4px;
+    }
+
+    .preview-invoice-no .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .preview-parties {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+
+    .preview-party .party-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .preview-party .party-name {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+
+    .preview-party p { font-size: 0.85rem; color: #555; line-height: 1.6; }
+
+    .preview-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+
+    .preview-table th {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #999;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .preview-table th:last-child { text-align: right; }
+
+    .preview-table td {
+      padding: 14px 12px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #eee;
+      color: #1a1a1a;
+    }
+
+    .preview-table td:last-child { text-align: right; }
+
+    .preview-totals { margin-left: auto; width: 260px; }
+
+    .preview-total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .preview-total-row.grand {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      color: #1a1a1a;
+      border-top: 2px solid #1a1a1a;
+      margin-top: 8px;
+      padding-top: 12px;
+    }
+
+    .preview-total-row.grand span:last-child { color: #8b6914; }
+
+    .preview-note {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #ddd;
+      font-size: 0.8rem;
+      color: #888;
+      line-height: 1.7;
+    }
+
+    .preview-footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: #bbb;
+      text-transform: uppercase;
+    }
+
+    /* ── PAYMENT LINK RESULT ── */
+    .result-box {
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--mid);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 40px;
+      text-align: center;
+    }
+
+    .result-icon { font-size: 3rem; margin-bottom: 16px; }
+
+    .result-title {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .result-sub {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 32px;
+    }
+
+    .link-display {
+      background: var(--dark);
+      border: 1px solid rgba(201,168,76,0.2);
+      padding: 16px 20px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--gold-light);
+      word-break: break-all;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 24px;
+    }
+
+    .copy-btn:hover { background: rgba(201,168,76,0.1); }
+
+    .new-invoice-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .new-invoice-btn:hover { color: var(--white); }
+
+    /* ── STATUS ── */
+    .status-msg {
+      text-align: center;
+      padding: 12px;
+      font-size: 0.8rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .status-msg.error { color: #e05555; background: rgba(224,85,85,0.1); border: 1px solid rgba(224,85,85,0.2); }
+    .status-msg.success { color: #5ec97a; background: rgba(94,201,122,0.1); border: 1px solid rgba(94,201,122,0.2); }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .preview-parties { grid-template-columns: 1fr; }
+      .invoice-preview { padding: 30px 20px; }
+      .line-item { grid-template-columns: 1fr 70px 90px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Rockwell <em>Film & Photo</em></div>
+  <div class="logo-sub">Client Invoice System</div>
+  <div class="gold-line"></div>
+</div>
+
+<!-- COUPLE ANIMATION -->
+<div id="coupleAnimation" style="text-align:center; margin-bottom: 40px; position:relative; height:140px; overflow:visible;">
+  <canvas id="animCanvas" width="700" height="140" style="max-width:100%;"></canvas>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('create')">Create Invoice</button>
+  <button class="tab" onclick="showTab('preview')">Preview</button>
+</div>
+
+<!-- CREATE PANEL -->
+<div class="panel active" id="panel-create">
+  <div class="form-wrap">
+
+    <div class="form-section">
+      <div class="form-section-title">Client Information</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Invoice Title</label>
+          <input type="text" id="invoiceTitle" placeholder="e.g. 2026 Wedding Film & Photo Package" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="field">
+          <label>Package Description</label>
+          <textarea id="invoiceDesc" placeholder="e.g. Full day wedding videography and photography coverage including highlight film, ceremony film, and gallery of edited photos." style="min-height:60px;" oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Client Name / Couple</label>
+          <input type="text" id="clientName" placeholder="e.g. Sarah & James Miller" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Client Email</label>
+          <input type="email" id="clientEmail" placeholder="sarah@email.com" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Bride Initial</label>
+          <input type="text" id="brideInitial" placeholder="S" maxlength="1" style="text-align:center; font-size:1.5rem; text-transform:uppercase;" oninput="updateInitials()">
+        </div>
+        <div class="field">
+          <label>Groom Initial</label>
+          <input type="text" id="groomInitial" placeholder="J" maxlength="1" style="text-align:center; font-size:1.5rem; text-transform:uppercase;" oninput="updateInitials()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Wedding Date</label>
+          <input type="date" id="weddingDate" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Invoice Date</label>
+          <input type="date" id="invoiceDate" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="field">
+          <label>Due Date</label>
+          <input type="date" id="dueDate" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Services</div>
+      <div class="line-header">
+        <span>Description</span>
+        <span>Qty</span>
+        <span>Price</span>
+        <span></span>
+      </div>
+      <div class="line-items" id="lineItems"></div>
+      <button class="add-line-btn" onclick="addLine()">+ Add Line Item</button>
+
+      <div class="totals" id="totalsDisplay">
+        <div class="total-row"><span>Subtotal</span><span id="subtotalDisplay">$0.00</span></div>
+        <div class="total-row grand"><span>Total Due</span><span id="totalDisplay">$0.00</span></div>
+      </div>
+    </div>
+
+    <!-- Deposit Toggle -->
+    <div class="deposit-wrap">
+      <div class="deposit-header">
+        <span class="deposit-label">Collect Deposit Only?</span>
+        <label class="toggle">
+          <input type="checkbox" id="depositToggle" onchange="toggleDeposit()">
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+        </label>
+      </div>
+      <div class="deposit-options" id="depositOptions">
+        <div class="deposit-presets">
+          <button class="preset-btn" onclick="setDeposit(10)">10%</button>
+          <button class="preset-btn" onclick="setDeposit(25)">25%</button>
+          <button class="preset-btn" onclick="setDeposit(50)">50%</button>
+          <button class="preset-btn" onclick="setDeposit(75)">75%</button>
+          <button class="preset-btn" onclick="setDeposit(100)">Full</button>
+          <button class="preset-btn" onclick="setDeposit('custom')">Custom $</button>
+        </div>
+        <div class="field" id="customDepositField" style="display:none;">
+          <label>Custom Deposit Amount</label>
+          <input type="number" id="customDeposit" placeholder="500" oninput="updatePreview()">
+        </div>
+        <div class="total-row grand" style="padding-top:12px; border-top: 1px solid rgba(201,168,76,0.2);">
+          <span style="color:var(--muted); font-size:0.85rem;">Amount to Charge</span>
+          <span id="chargeDisplay" style="color:var(--gold); font-family:var(--serif); font-size:1.1rem;">$0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Notes</div>
+      <div class="field">
+        <label>Invoice Notes (optional)</label>
+        <textarea id="invoiceNotes" placeholder="e.g. Thank you for choosing Rockwell Film & Photo! Remaining balance due 30 days before the wedding." oninput="updatePreview()"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="createPaymentLink()">Generate Payment Link</button>
+    <div class="status-msg" id="statusMsg"></div>
+  </div>
+</div>
+
+<!-- PREVIEW PANEL -->
+<div class="panel" id="panel-preview">
+  <div class="invoice-preview" id="invoicePreview">
+    <div class="preview-header">
+      <div>
+        <div class="preview-logo">Rockwell <span>Film & Photo</span></div>
+        <div style="font-size:0.7rem; letter-spacing:0.15em; color:#999; text-transform:uppercase; margin-top:4px;">Wedding Videography & Photography</div>
+      </div>
+      <div class="preview-invoice-no">
+        <div class="label">Invoice</div>
+        <div class="value" id="prev-invoiceNo">#RFP-001</div>
+        <div style="font-size:0.75rem; color:#999; margin-top:4px;" id="prev-date">—</div>
+      </div>
+    </div>
+
+    <div class="preview-parties">
+      <div class="preview-party">
+        <div class="party-label">From</div>
+        <div class="party-name">Rockwell Film & Photo</div>
+        <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94fdfaf2fbd4e6fbf7ffe3f1f8f8f2fdf8f9f5faf0e4fcfbe0fbbaf7fbf9">[email&#160;protected]</a><br>(412) 292-5355<br>rockwellfilmandphoto.com</p>
+      </div>
+      <div class="preview-party">
+        <div class="party-label">To</div>
+        <div class="party-name" id="prev-clientName">Client Name</div>
+        <p id="prev-clientEmail" style="color:#555;"></p>
+        <p id="prev-weddingDate" style="color:#999; font-size:0.8rem; margin-top:4px;"></p>
+      </div>
+    </div>
+
+    <table class="preview-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Qty</th>
+          <th style="text-align:right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody id="prev-lineItems"></tbody>
+    </table>
+
+    <div class="preview-totals">
+      <div class="preview-total-row"><span>Subtotal</span><span id="prev-subtotal">$0.00</span></div>
+      <div class="preview-total-row grand"><span>Total</span><span id="prev-total">$0.00</span></div>
+    </div>
+
+    <div class="preview-note" id="prev-notes"></div>
+
+    <div class="preview-footer">
+      Rockwell Film & Photo &nbsp;·&nbsp; (412) 292-5355 &nbsp;·&nbsp; rockwellfilmandphoto.com
+    </div>
+  </div>
+</div>
+
+<!-- RESULT PANEL -->
+<div class="panel" id="panel-result">
+  <div class="result-box">
+    <div class="result-icon">✓</div>
+    <div class="result-title">Payment Link Ready</div>
+    <div class="result-sub">Send this link to your client — they can pay securely via card.</div>
+    <div class="link-display" id="paymentLinkDisplay"></div>
+    <br>
+    <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+    <br><br>
+    <button class="new-invoice-btn" onclick="resetForm()">Create Another Invoice</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbIjs5mMw1Xfvq0HzmaIO47DLVf7ej2znWx8aNo100Mg1uaMd0';
+  const stripe = Stripe(STRIPE_KEY);
+
+  let lineCount = 0;
+  let depositPercent = null;
+  let invoiceCounter = Math.floor(Math.random() * 900) + 100;
+
+  // Set today's date as default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('invoiceDate').value = today;
+  const due = new Date(); due.setDate(due.getDate() + 7);
+  document.getElementById('dueDate').value = due.toISOString().split('T')[0];
+
+  // Add default line items
+  addLine('Wedding Videography Package', 1, '');
+  addLine('Wedding Photography Package', 1, '');
+
+  function showTab(name) {
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['create','preview','result'][i] === name));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    if (name === 'preview') updatePreview();
+  }
+
+  function addLine(desc='', qty=1, price='') {
+    lineCount++;
+    const id = lineCount;
+    const div = document.createElement('div');
+    div.className = 'line-item';
+    div.id = 'line-' + id;
+    div.innerHTML = `
+      <input type="text" placeholder="Service description" value="${desc}" oninput="calcTotals(); updatePreview()">
+      <input type="number" placeholder="1" value="${qty}" min="1" oninput="calcTotals(); updatePreview()" style="text-align:center;">
+      <input type="number" placeholder="0.00" value="${price}" min="0" step="0.01" oninput="calcTotals(); updatePreview()">
+      <button class="remove-btn" onclick="removeLine(${id})">×</button>
+    `;
+    document.getElementById('lineItems').appendChild(div);
+    calcTotals();
+  }
+
+  function removeLine(id) {
+    const el = document.getElementById('line-' + id);
+    if (el) el.remove();
+    calcTotals();
+    updatePreview();
+  }
+
+  function getTotal() {
+    let total = 0;
+    document.querySelectorAll('.line-item').forEach(item => {
+      const inputs = item.querySelectorAll('input');
+      const qty = parseFloat(inputs[1].value) || 0;
+      const price = parseFloat(inputs[2].value) || 0;
+      total += qty * price;
+    });
+    return total;
+  }
+
+  function calcTotals() {
+    const total = getTotal();
+    document.getElementById('subtotalDisplay').textContent = '$' + total.toFixed(2);
+    document.getElementById('totalDisplay').textContent = '$' + total.toFixed(2);
+    document.getElementById('prev-subtotal').textContent = '$' + total.toFixed(2);
+    document.getElementById('prev-total').textContent = '$' + total.toFixed(2);
+    updateChargeAmount();
+  }
+
+  function toggleDeposit() {
+    const on = document.getElementById('depositToggle').checked;
+    document.getElementById('depositOptions').classList.toggle('visible', on);
+    if (!on) { depositPercent = null; updateChargeAmount(); }
+  }
+
+  function setDeposit(val) {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('customDepositField').style.display = val === 'custom' ? 'block' : 'none';
+    depositPercent = val === 'custom' ? null : val;
+    updateChargeAmount();
+  }
+
+  function updateChargeAmount() {
+    const total = getTotal();
+    let charge = total;
+    if (depositPercent && depositPercent !== 'custom') {
+      charge = total * depositPercent / 100;
+    } else if (depositPercent === null && document.getElementById('depositToggle').checked) {
+      const custom = parseFloat(document.getElementById('customDeposit')?.value) || 0;
+      charge = custom;
+    }
+    document.getElementById('chargeDisplay').textContent = '$' + charge.toFixed(2);
+    return charge;
+  }
+
+  function getChargeAmount() {
+    const total = getTotal();
+    if (!document.getElementById('depositToggle').checked) return total;
+    if (depositPercent && depositPercent !== 'custom') return total * depositPercent / 100;
+    return parseFloat(document.getElementById('customDeposit')?.value) || total;
+  }
+
+  function updatePreview() {
+    const name = document.getElementById('clientName').value || 'Client Name';
+    const email = document.getElementById('clientEmail').value || '';
+    const wedding = document.getElementById('weddingDate').value;
+    const invDate = document.getElementById('invoiceDate').value;
+    const notes = document.getElementById('invoiceNotes').value;
+
+    document.getElementById('prev-clientName').textContent = name;
+    document.getElementById('prev-clientEmail').textContent = email;
+    document.getElementById('prev-weddingDate').textContent = wedding ? 'Wedding: ' + new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '';
+    document.getElementById('prev-date').textContent = invDate ? new Date(invDate + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '';
+    document.getElementById('prev-invoiceNo').textContent = '#RFP-' + invoiceCounter;
+    document.getElementById('prev-notes').textContent = notes;
+    // Title and desc
+    const title = document.getElementById('invoiceTitle').value;
+    const desc = document.getElementById('invoiceDesc').value;
+    let prevTitleEl = document.getElementById('prev-invoice-title');
+    if (!prevTitleEl) {
+      prevTitleEl = document.createElement('div');
+      prevTitleEl.id = 'prev-invoice-title';
+      prevTitleEl.style.cssText = 'margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid #eee;';
+      document.querySelector('.preview-parties').after(prevTitleEl);
+    }
+    prevTitleEl.innerHTML = title ? `<div style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; margin-bottom:8px;">${title}</div><div style="font-size:0.85rem; color:#666; line-height:1.7;">${desc}</div>` : '';
+
+    // Line items
+    const tbody = document.getElementById('prev-lineItems');
+    tbody.innerHTML = '';
+    document.querySelectorAll('.line-item').forEach(item => {
+      const inputs = item.querySelectorAll('input');
+      const desc = inputs[0].value || '—';
+      const qty = parseFloat(inputs[1].value) || 0;
+      const price = parseFloat(inputs[2].value) || 0;
+      const amount = qty * price;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${desc}</td><td>${qty}</td><td>$${amount.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    calcTotals();
+  }
+
+  async function createPaymentLink() {
+    const name = document.getElementById('clientName').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    const amount = getChargeAmount();
+
+    if (!name) { showStatus('Please enter client name.', 'error'); return; }
+    if (!email) { showStatus('Please enter client email.', 'error'); return; }
+    if (amount <= 0) { showStatus('Please add at least one line item with a price.', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    showStatus('', '');
+
+    try {
+      // Build description
+      const lines = [];
+      document.querySelectorAll('.line-item').forEach(item => {
+        const inputs = item.querySelectorAll('input');
+        const desc = inputs[0].value;
+        if (desc) lines.push(desc);
+      });
+      const description = lines.join(' + ') || 'Wedding Services';
+      const wedding = document.getElementById('weddingDate').value;
+      const fullDesc = wedding ? `${description} — Wedding ${new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}` : description;
+
+      // Since we can't call Stripe API directly from frontend for payment links,
+      // we'll use Stripe.js to redirect to a checkout session via a pre-built approach
+      // Instead, build a mailto: link with invoice details for now, plus show instructions
+      const amountCents = Math.round(amount * 100);
+      
+      // Create a Stripe Checkout URL using the publishable key approach
+      // We'll generate a payment request link via Stripe's hosted page
+      const invoiceNo = 'RFP-' + invoiceCounter;
+      
+      // Format the payment details for a Stripe Payment Link
+      // Since we only have pk, we'll create a pre-filled Stripe payment link
+      const stripePaymentUrl = `https://buy.stripe.com/`;
+      
+      // Show the result with instructions to use Stripe dashboard
+      const summaryLines = lines.map(l => `• ${l}`).join('\n');
+      const emailSubject = encodeURIComponent(`Invoice ${invoiceNo} — Rockwell Film & Photo`);
+      const emailBody = encodeURIComponent(
+        `Hi ${name},\n\nThank you for choosing Rockwell Film & Photo!\n\nHere are your invoice details:\n\nInvoice: ${invoiceNo}\n${summaryLines}\n\nAmount Due: $${amount.toFixed(2)}\n\nPlease use the payment link below to complete your payment:\n[PAYMENT LINK HERE]\n\nIf you have any questions, don't hesitate to reach out!\n\nWarm regards,\nStephen Rockwell\nRockwell Film & Photo\n(412) 292-5355\nrockwellfilmandphoto.com`
+      );
+      const mailtoLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
+
+      document.getElementById('paymentLinkDisplay').innerHTML = `
+        <strong style="color:var(--gold); font-family:var(--sans); font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase;">Invoice #${invoiceNo}</strong><br><br>
+        <strong>Client:</strong> ${name} (${email})<br>
+        <strong>Amount:</strong> $${amount.toFixed(2)}<br>
+        <strong>Services:</strong> ${description}<br><br>
+        <span style="color:var(--muted); font-size:0.8rem;">To send a Stripe payment link, go to your <a href="https://dashboard.stripe.com/payment-links/create" target="_blank" style="color:var(--gold);">Stripe Dashboard → Payment Links</a>, create a link for $${amount.toFixed(2)}, then paste it into the email below.</span>
+      `;
+
+      document.getElementById('paymentLinkDisplay').dataset.mailto = mailtoLink;
+      document.getElementById('paymentLinkDisplay').dataset.amount = amount.toFixed(2);
+      document.getElementById('paymentLinkDisplay').dataset.client = name;
+      document.getElementById('paymentLinkDisplay').dataset.email = email;
+
+      invoiceCounter++;
+      showTab('result');
+
+    } catch (err) {
+      showStatus('Error: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Generate Payment Link';
+    }
+  }
+
+  function copyLink() {
+    const display = document.getElementById('paymentLinkDisplay');
+    const email = display.dataset.email;
+    const amount = display.dataset.amount;
+    const client = display.dataset.client;
+    const mailto = display.dataset.mailto;
+    
+    // Open the mailto link
+    window.location.href = mailto;
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className = 'status-msg ' + type;
+    el.style.display = msg ? 'block' : 'none';
+  }
+
+  function resetForm() {
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientEmail').value = '';
+    document.getElementById('weddingDate').value = '';
+    document.getElementById('invoiceNotes').value = '';
+    document.getElementById('lineItems').innerHTML = '';
+    lineCount = 0;
+    addLine('Wedding Videography Package', 1, '');
+    addLine('Wedding Photography Package', 1, '');
+    calcTotals();
+    showTab('create');
+  }
+
+  updatePreview();
+  calcTotals();
+  // ── COUPLE ANIMATION ──
+  const canvas = document.getElementById('animCanvas');
+  const ctx = canvas.getContext('2d');
+  let brideI = 'S', groomI = 'J';
+  let frame = 0;
+  let heartsArr = [];
+
+  function updateInitials() {
+    brideI = (document.getElementById('brideInitial').value || 'S').toUpperCase();
+    groomI = (document.getElementById('groomInitial').value || 'J').toUpperCase();
+  }
+
+  function spawnHeart() {
+    heartsArr.push({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 30,
+      y: 55,
+      size: 8 + Math.random() * 8,
+      opacity: 1,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: -(1.5 + Math.random()),
+      life: 1
+    });
+  }
+
+  function drawHeart(x, y, size, opacity, color) {
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.bezierCurveTo(x, y - size*0.3, x - size, y - size*0.3, x - size, y);
+    ctx.bezierCurveTo(x - size, y + size*0.4, x, y + size*0.8, x, y + size);
+    ctx.bezierCurveTo(x, y + size*0.8, x + size, y + size*0.4, x + size, y);
+    ctx.bezierCurveTo(x + size, y - size*0.3, x, y - size*0.3, x, y);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawFigure(x, y, isBride, initial, swing) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    const GOLD = '#c9a84c';
+    const WHITE = '#f5f2ea';
+    const DARK = '#1a1510';
+
+    // Body lean toward center
+    const lean = isBride ? swing * 0.06 : -swing * 0.06;
+    ctx.rotate(lean);
+
+    // Dress / suit
+    if (isBride) {
+      // Dress skirt - flowy
+      ctx.beginPath();
+      ctx.moveTo(-2, 22);
+      ctx.quadraticCurveTo(-22 + swing*2, 62, -28 + swing*1.5, 78);
+      ctx.quadraticCurveTo(-10, 82, 0, 80);
+      ctx.quadraticCurveTo(10, 82, 28 - swing*1.5, 78);
+      ctx.quadraticCurveTo(22 - swing*2, 62, 2, 22);
+      ctx.fillStyle = WHITE;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(201,168,76,0.3)';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      // Bodice
+      ctx.beginPath();
+      ctx.roundRect(-8, 8, 16, 18, 2);
+      ctx.fillStyle = WHITE;
+      ctx.fill();
+
+      // Veil
+      ctx.beginPath();
+      ctx.moveTo(4, -14);
+      ctx.quadraticCurveTo(20, 0, 18 + swing, 40);
+      ctx.quadraticCurveTo(16 + swing, 40, 14, 0);
+      ctx.quadraticCurveTo(10, -10, 4, -14);
+      ctx.fillStyle = 'rgba(245,242,234,0.4)';
+      ctx.fill();
+
+    } else {
+      // Suit jacket
+      ctx.beginPath();
+      ctx.moveTo(-10, 10);
+      ctx.lineTo(-10, 70);
+      ctx.lineTo(10, 70);
+      ctx.lineTo(10, 10);
+      ctx.fillStyle = '#2a2825';
+      ctx.fill();
+
+      // Lapels
+      ctx.beginPath();
+      ctx.moveTo(-2, 10);
+      ctx.lineTo(-8, 20);
+      ctx.lineTo(-2, 30);
+      ctx.fillStyle = '#1a1510';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(2, 10);
+      ctx.lineTo(8, 20);
+      ctx.lineTo(2, 30);
+      ctx.fillStyle = '#1a1510';
+      ctx.fill();
+
+      // Tie
+      ctx.beginPath();
+      ctx.moveTo(-1.5, 15);
+      ctx.lineTo(-3, 40);
+      ctx.lineTo(0, 44);
+      ctx.lineTo(3, 40);
+      ctx.lineTo(1.5, 15);
+      ctx.fillStyle = GOLD;
+      ctx.fill();
+
+      // Trousers
+      ctx.fillStyle = '#1f1e1c';
+      ctx.fillRect(-9, 60, 8, 20);
+      ctx.fillRect(1, 60, 8, 20);
+    }
+
+    // Head
+    ctx.beginPath();
+    ctx.arc(0, -6, 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#d4a574';
+    ctx.fill();
+
+    // Hair
+    if (isBride) {
+      ctx.beginPath();
+      ctx.arc(0, -8, 12, Math.PI, Math.PI * 2);
+      ctx.quadraticCurveTo(14, -6, 12, 0);
+      ctx.quadraticCurveTo(-12, 0, -14, -6);
+      ctx.fillStyle = '#4a3525';
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.arc(0, -10, 12, Math.PI + 0.3, Math.PI * 2 - 0.3);
+      ctx.fillStyle = '#3a2a1a';
+      ctx.fill();
+    }
+
+    // Initial on body
+    ctx.fillStyle = GOLD;
+    ctx.font = `bold 11px 'Cormorant Garamond', serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(initial, 0, isBride ? 30 : 40);
+
+    ctx.restore();
+  }
+
+  function drawAmpersand(x, y, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = '#c9a84c';
+    ctx.font = `italic bold 28px 'Cormorant Garamond', serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('&', x, y);
+    ctx.restore();
+  }
+
+  function animate() {
+    frame++;
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const cx = W / 2;
+    const swing = Math.sin(frame * 0.03) * 8;
+
+    // Soft glow behind couple
+    const grd = ctx.createRadialGradient(cx, 60, 10, cx, 60, 80);
+    grd.addColorStop(0, 'rgba(201,168,76,0.06)');
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    // Arms reaching toward each other
+    // Bride arm
+    ctx.save();
+    ctx.strokeStyle = '#d4a574';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 22, 50);
+    ctx.quadraticCurveTo(cx - 5, 42 + swing * 0.3, cx, 48);
+    ctx.stroke();
+    ctx.restore();
+
+    // Groom arm
+    ctx.save();
+    ctx.strokeStyle = '#d4a574';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx + 22, 48);
+    ctx.quadraticCurveTo(cx + 5, 42 + swing * 0.3, cx, 48);
+    ctx.stroke();
+    ctx.restore();
+
+    // Draw figures
+    drawFigure(cx - 38, 62, true, brideI, swing);
+    drawFigure(cx + 38, 62, false, groomI, swing);
+
+    // Ampersand between them
+    const ampAlpha = 0.7 + Math.sin(frame * 0.04) * 0.3;
+    drawAmpersand(cx, 40, ampAlpha);
+
+    // Spawn hearts periodically
+    if (frame % 25 === 0) spawnHeart();
+
+    // Draw & update hearts
+    heartsArr = heartsArr.filter(h => h.life > 0);
+    heartsArr.forEach(h => {
+      const col = Math.random() > 0.5 ? '#c9a84c' : '#e8d5a3';
+      drawHeart(h.x, h.y, h.size * h.life, h.opacity * h.life, col);
+      h.x += h.vx;
+      h.y += h.vy;
+      h.life -= 0.015;
+      h.opacity = h.life;
+    });
+
+    // Ground line
+    ctx.strok
