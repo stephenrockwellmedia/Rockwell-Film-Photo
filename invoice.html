@@ -833,10 +833,12 @@
   <div class="result-box">
     <div class="result-icon">✓</div>
     <div class="result-title">Payment Link Ready</div>
-    <div class="result-sub">Send this link to your client — they can pay securely via card.</div>
+    <div class="result-sub">Copy the link below or click Email Client to send it directly.</div>
     <div class="link-display" id="paymentLinkDisplay"></div>
     <br>
-    <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+    <button class="copy-btn" onclick="copyLink()" id="copyBtn">Copy Link</button>
+    &nbsp;&nbsp;
+    <button class="copy-btn" onclick="emailClient()" style="background:rgba(201,168,76,0.1);">📧 Email Client</button>
     <br><br>
     <button class="new-invoice-btn" onclick="resetForm()">Create Another Invoice</button>
   </div>
@@ -986,6 +988,9 @@
     calcTotals();
   }
 
+  // Worker URL — update this after deploying your Cloudflare Worker
+  const WORKER_URL = 'https://rockwell-invoice.stephenrockwellmedia.workers.dev';
+
   async function createPaymentLink() {
     const name = document.getElementById('clientName').value.trim();
     const email = document.getElementById('clientEmail').value.trim();
@@ -1001,7 +1006,6 @@
     showStatus('', '');
 
     try {
-      // Build description
       const lines = [];
       document.querySelectorAll('.line-item').forEach(item => {
         const inputs = item.querySelectorAll('input');
@@ -1009,38 +1013,42 @@
         if (desc) lines.push(desc);
       });
       const description = lines.join(' + ') || 'Wedding Services';
-      const wedding = document.getElementById('weddingDate').value;
-      const fullDesc = wedding ? `${description} — Wedding ${new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}` : description;
-
-      // Since we can't call Stripe API directly from frontend for payment links,
-      // we'll use Stripe.js to redirect to a checkout session via a pre-built approach
-      // Instead, build a mailto: link with invoice details for now, plus show instructions
-      const amountCents = Math.round(amount * 100);
-      
-      // Create a Stripe Checkout URL using the publishable key approach
-      // We'll generate a payment request link via Stripe's hosted page
       const invoiceNo = 'RFP-' + invoiceCounter;
-      
-      // Format the payment details for a Stripe Payment Link
-      // Since we only have pk, we'll create a pre-filled Stripe payment link
-      const stripePaymentUrl = `https://buy.stripe.com/`;
-      
-      // Show the result with instructions to use Stripe dashboard
-      const summaryLines = lines.map(l => `• ${l}`).join('\n');
+      const wedding = document.getElementById('weddingDate').value;
+      const amountCents = Math.round(amount * 100);
+
+      // Call Cloudflare Worker to create Stripe Checkout session
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientName: name,
+          clientEmail: email,
+          amountCents,
+          description,
+          invoiceNo,
+          weddingDate: wedding,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        showStatus('Error: ' + (data.error || 'Could not generate link'), 'error');
+        return;
+      }
+
+      // Payment link generated successfully
+      const paymentUrl = data.url;
       const emailSubject = encodeURIComponent(`Invoice ${invoiceNo} — Rockwell Film & Photo`);
       const emailBody = encodeURIComponent(
-        `Hi ${name},\n\nThank you for choosing Rockwell Film & Photo!\n\nHere are your invoice details:\n\nInvoice: ${invoiceNo}\n${summaryLines}\n\nAmount Due: $${amount.toFixed(2)}\n\nPlease use the payment link below to complete your payment:\n[PAYMENT LINK HERE]\n\nIf you have any questions, don't hesitate to reach out!\n\nWarm regards,\nStephen Rockwell\nRockwell Film & Photo\n(412) 292-5355\nrockwellfilmandphoto.com`
+        `Hi ${name},\n\nThank you for choosing Rockwell Film & Photo!\n\nPlease use the secure link below to complete your payment of $${amount.toFixed(2)}:\n\n${paymentUrl}\n\nInvoice: ${invoiceNo}\nServices: ${description}${wedding ? '\nWedding Date: ' + new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : ''}\n\nIf you have any questions, don't hesitate to reach out!\n\nWarm regards,\nStephen Rockwell\nRockwell Film & Photo\n(412) 292-5355\nrockwellfilmandphoto.com`
       );
       const mailtoLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
 
-      document.getElementById('paymentLinkDisplay').innerHTML = `
-        <strong style="color:var(--gold); font-family:var(--sans); font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase;">Invoice #${invoiceNo}</strong><br><br>
-        <strong>Client:</strong> ${name} (${email})<br>
-        <strong>Amount:</strong> $${amount.toFixed(2)}<br>
-        <strong>Services:</strong> ${description}<br><br>
-        <span style="color:var(--muted); font-size:0.8rem;">To send a Stripe payment link, go to your <a href="https://dashboard.stripe.com/payment-links/create" target="_blank" style="color:var(--gold);">Stripe Dashboard → Payment Links</a>, create a link for $${amount.toFixed(2)}, then paste it into the email below.</span>
-      `;
-
+      // Store for copy/email buttons
+      document.getElementById('paymentLinkDisplay').textContent = paymentUrl;
+      document.getElementById('paymentLinkDisplay').dataset.url = paymentUrl;
       document.getElementById('paymentLinkDisplay').dataset.mailto = mailtoLink;
       document.getElementById('paymentLinkDisplay').dataset.amount = amount.toFixed(2);
       document.getElementById('paymentLinkDisplay').dataset.client = name;
@@ -1059,13 +1067,28 @@
 
   function copyLink() {
     const display = document.getElementById('paymentLinkDisplay');
-    const email = display.dataset.email;
-    const amount = display.dataset.amount;
-    const client = display.dataset.client;
-    const mailto = display.dataset.mailto;
-    
-    // Open the mailto link
-    window.location.href = mailto;
+    const url = display.dataset.url || display.textContent.trim();
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy Link', 2000);
+    }).catch(() => {
+      // Fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy Link', 2000);
+    });
+  }
+
+  function emailClient() {
+    const display = document.getElementById('paymentLinkDisplay');
+    window.location.href = display.dataset.mailto;
   }
 
   function showStatus(msg, type) {
