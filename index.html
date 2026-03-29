@@ -2112,8 +2112,7 @@
     </div>
 
     <!-- Form -->
-    <form class="contact-form" action="https://formspree.io/f/mkoqgjzb" method="POST">
-      <input type="hidden" name="_next" value="https://rockwellfilmandphoto.com/thank-you" />
+    <form class="contact-form" id="contactForm">
       <div class="form-row">
         <div class="form-group">
           <label for="name1">Your Name</label>
@@ -3198,13 +3197,31 @@
   });
 
   /* ── FORM ── */
-  function handleSubmit(e) {
+  document.getElementById('contactForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    // Wire up to Formspree, Netlify Forms, or your email service
-    // Formspree: change <form> action to "https://formspree.io/f/YOUR_ID" and remove onsubmit
-    alert("Thank you! We'll be in touch within 24 hours.");
-    e.target.reset();
-  }
+    const form = e.target;
+    const btn = form.querySelector('.form-submit');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    try {
+      const res = await fetch('https://formspree.io/f/mkoqgjzb', {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        window.location.href = 'https://rockwellfilmandphoto.com/thank-you';
+      } else {
+        btn.textContent = 'Send Inquiry';
+        btn.disabled = false;
+        alert("Something went wrong. Please try again.");
+      }
+    } catch(err) {
+      btn.textContent = 'Send Inquiry';
+      btn.disabled = false;
+      alert("Something went wrong. Please try again.");
+    }
+  });
 
   /* ── PHOTO TOGGLE (mobile) ── */
   function togglePhotos() {
