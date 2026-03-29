@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You | Rockwell Film & Photo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #f5f0e8;
+      --dark: #1a1714;
+      --gold: #b89a6a;
+      --light-gold: #d4b896;
+    }
+
+    body {
+      background-color: var(--dark);
+      color: var(--cream);
+      font-family: 'Jost', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ambient glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(184,154,106,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 2rem;
+      max-width: 600px;
+      animation: fadeUp 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 2.5rem;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.3s forwards;
+    }
+
+    .icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 2rem auto;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.5s forwards;
+    }
+
+    .brand {
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      animation: fadeUp 1s ease 0.2s forwards;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      color: var(--cream);
+      opacity: 0;
+      animation: fadeUp 1s ease 0.4s forwards;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--light-gold);
+    }
+
+    p {
+      font-weight: 300;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: rgba(245,240,232,0.65);
+      letter-spacing: 0.04em;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.6s forwards;
+      margin-top: 1.5rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 3rem;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(184,154,106,0.3);
+      padding-bottom: 3px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.8s forwards;
+      transition: color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: var(--light-gold);
+      border-color: var(--light-gold);
+    }
+
+    /* Corner accents */
+    .corner {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      opacity: 0.25;
+      z-index: 1;
+    }
+    .corner--tl { top: 2rem; left: 2rem; border-top: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+    .corner--tr { top: 2rem; right: 2rem; border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+    .corner--bl { bottom: 2rem; left: 2rem; border-bottom: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+    .corner--br { bottom: 2rem; right: 2rem; border-bottom: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+  </style>
+</head>
+<body>
+
+  <div class="corner corner--tl"></div>
+  <div class="corner corner--tr"></div>
+  <div class="corner corner--bl"></div>
+  <div class="corner corner--br"></div>
+
+  <div class="container">
+    <p class="brand">Rockwell Film &amp; Photo</p>
+
+    <div class="icon">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" stroke="#b89a6a" stroke-width="1"/>
+        <polyline points="20,33 28,41 44,24" stroke="#b89a6a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <h1>Your message<br/>has been <em>received.</em></h1>
+
+    <div class="divider"></div>
+
+    <p>Thank you for reaching out. We'll be in touch<br/>within 24–48 hours to discuss your day.</p>
+
+    <a href="/" class="back-link">Return home</a>
+  </div>
+
+</body>
+</html>
