@@ -1539,6 +1539,86 @@
     #timeline { padding: 64px 18px !important; }
   }
 
+  /* ── CUSTOM VIDEO PLAYER ── */
+  .video-player-wrap {
+    position: relative;
+    overflow: hidden;
+    background: var(--mid);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border: 1px solid rgba(201,168,76,0.15);
+    isolation: isolate;
+  }
+  .video-player-wrap video {
+    display: block;
+    width: 100%;
+    background: var(--mid);
+  }
+  .video-player-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,9,6,0.45) 0%, rgba(10,9,6,0) 35%, rgba(10,9,6,0) 65%, rgba(10,9,6,0.2) 100%);
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+  .video-player-wrap.playing::before { opacity: 0; }
+  .video-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    transition: transform 0.3s ease, background 0.2s ease, opacity 0.3s ease;
+    z-index: 2;
+  }
+  .video-play-btn svg {
+    width: 28px;
+    height: 28px;
+    margin-left: 4px;
+    transition: transform 0.2s ease;
+  }
+  .video-player-wrap:hover .video-play-btn {
+    background: var(--gold-light);
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  .video-player-wrap.playing .video-play-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  .video-player-wrap.playing:hover .video-play-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .video-player-wrap.playing:hover .video-play-btn svg {
+    display: none;
+  }
+  .video-player-wrap.playing:hover .video-play-btn::after {
+    content: '';
+    width: 22px;
+    height: 22px;
+    background:
+      linear-gradient(#0a0906, #0a0906) left/7px 100% no-repeat,
+      linear-gradient(#0a0906, #0a0906) right/7px 100% no-repeat;
+  }
+
+  @media (max-width: 600px) {
+    .video-play-btn { width: 64px; height: 64px; }
+    .video-play-btn svg { width: 22px; height: 22px; }
+  }
+
   /* mobile menu open */
   .mobile-menu {
     display: none;
@@ -1628,7 +1708,7 @@
   .tl-ghost-btn:hover { background:rgba(201,168,76,0.08); }
 
 </style>
-  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
 </head>
 <body>
 
@@ -1947,53 +2027,33 @@
 <section id="letter" style="background:var(--black); padding:140px 60px;">
   <div style="max-width:780px; margin:0 auto;">
 
-    <div style="text-align:center; margin-bottom:72px;">
+    <div style="text-align:center; margin-bottom:48px;">
       <p class="section-eyebrow">From Our Hearts</p>
       <h2 class="section-title">A Letter to <em>Our Brides</em></h2>
     </div>
 
-    <div class="letter-body">
+    <!-- Message to Our Brides video from R2 -->
+    <div class="video-player-wrap" id="bridesPlayerWrap" style="max-width:760px; margin:0 auto 64px;">
+      <video
+        id="bridesVideo"
+        src="https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/About%20Videos/A%20message%20to%20our%20brides%20.mp4"
+        playsinline
+        preload="metadata"
+        style="aspect-ratio:16/9;object-fit:cover;"
+      ></video>
+      <button class="video-play-btn" onclick="toggleVideo('bridesVideo','bridesPlayerWrap')" aria-label="Play message to our brides video">
+        <svg viewBox="0 0 24 24" fill="#0a0906"><polygon points="7,5 19,12 7,19"/></svg>
+      </button>
+    </div>
 
-      <p class="letter-para letter-large">
-        Hey — can we talk to you for a second? Not as a business. Just as someone who has spent the last 8 years showing up for couples on the most important day of their lives.
-      </p>
-
-      <p class="letter-para">
-        We know you've been planning this for a long time. The venue, the flowers, the dress, the seating chart — you've thought about every single detail. And somewhere in the middle of all of that, you started wondering about your photos and film. You want them to be beautiful. You want them to feel real. You want to watch your highlight film ten years from now and still feel everything you felt that day.
-      </p>
-
-      <p class="letter-para">
-        We get it. Because we've sat across from hundreds of couples just like you, and we've heard the same thing every time — <em>"We just want to remember how it felt."</em>
-      </p>
-
-      <div class="letter-pullquote">
-        "We just want to remember how it felt."
-      </div>
-
-      <p class="letter-para">
-        That's exactly what we're here for. When you book with Rockwell Film & Photo, you're not just hiring a videographer and photographer. You're bringing someone into your family for a day — someone who genuinely cares about you, who will laugh with you during portraits, who will stay calm when things run late, and who will make sure you never feel like you're performing for a camera.
-      </p>
-
-      <p class="letter-para">
-        We've been doing this for over 8 years. We've shot weddings in the rain, in the snow, in 95-degree heat. We've dealt with last-minute venue changes, missing boutonnieres, and ceremonies that started an hour late. And through all of it — every single time — we've come home with something beautiful. Because the love is always there. And that's what we capture.
-      </p>
-
-      <p class="letter-para">
-        You deserve to be fully present on your wedding day. You deserve to dance without worrying about the camera, to cry without feeling self-conscious, to laugh so hard your stomach hurts and know that someone is there catching all of it.
-      </p>
-
-      <p class="letter-para">
-        That someone is us.
-      </p>
-
-      <p class="letter-signature">
+    <div class="letter-body" style="text-align:center;">
+      <p class="letter-signature" style="border-top:none; margin-top:16px; padding-top:0;">
         With love,<br>
         <em>Stephen & the Rockwell Team</em>
       </p>
-
     </div>
 
-    <div style="text-align:center; margin-top:64px;">
+    <div style="text-align:center; margin-top:48px;">
       <a href="#contact" class="btn-primary">Let's Talk About Your Day</a>
     </div>
 
@@ -2032,12 +2092,19 @@
 <section id="about">
   <div class="about-inner">
     <div class="about-image-wrap">
-      <!-- PHOTO: upload Stephen's photo to Cloudinary and replace the src below -->
-      <img class="about-img" src="https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/Web%20assets/Web%20assets_Screenshot_2026-03-07_at_3.23.34_PM_upuusb.webp" alt="Stephen Rockwell" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-      <div class="about-img-placeholder" style="display:none;">
-        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="0.8">
-          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-        </svg>
+      <!-- About video from R2 — custom solid player -->
+      <div class="video-player-wrap" id="aboutPlayerWrap">
+        <video
+          id="aboutVideo"
+          src="https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/About%20Videos/About.mp4"
+          poster="https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/Web%20assets/Web%20assets_Screenshot_2026-03-07_at_3.23.34_PM_upuusb.webp"
+          playsinline
+          preload="metadata"
+          style="aspect-ratio:4/5;object-fit:cover;"
+        ></video>
+        <button class="video-play-btn" onclick="toggleVideo('aboutVideo','aboutPlayerWrap')" aria-label="Play about video">
+          <svg viewBox="0 0 24 24" fill="#0a0906"><polygon points="7,5 19,12 7,19"/></svg>
+        </button>
       </div>
 
     </div>
@@ -2137,7 +2204,6 @@
         <label for="message">Tell Us About Your Day</label>
         <textarea id="message" name="message" placeholder="Venue, vibe, anything you'd like us to know…"></textarea>
       </div>
-      <div class="h-captcha" data-sitekey="990c90b0-0f4e-40e6-ba54-2af0b22e2f34" style="margin-bottom:8px;"></div>
       <button type="submit" class="form-submit">Send Inquiry</button>
     </form>
 
@@ -2517,6 +2583,59 @@
 
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+  /* ── CUSTOM VIDEO PLAYER CONTROL ── */
+  function toggleVideo(videoId, wrapId) {
+    const video = document.getElementById(videoId);
+    const wrap = document.getElementById(wrapId);
+    if (!video || !wrap) return;
+
+    // Pause all other custom-player videos first
+    document.querySelectorAll('.video-player-wrap video').forEach(v => {
+      if (v.id !== videoId && !v.paused) {
+        v.pause();
+        const otherWrap = v.closest('.video-player-wrap');
+        if (otherWrap) otherWrap.classList.remove('playing');
+      }
+    });
+
+    if (video.paused || video.ended) {
+      video.play().then(() => {
+        wrap.classList.add('playing');
+        // Enable native controls once playing so user can scrub/pause/volume
+        video.setAttribute('controls', 'controls');
+      }).catch(err => {
+        console.warn('Video play failed:', err);
+      });
+    } else {
+      video.pause();
+      wrap.classList.remove('playing');
+      video.removeAttribute('controls');
+    }
+  }
+
+  // Auto-sync class state when videos end/pause via native controls
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.video-player-wrap video').forEach(v => {
+      const wrap = v.closest('.video-player-wrap');
+      v.addEventListener('ended', () => {
+        wrap.classList.remove('playing');
+        v.removeAttribute('controls');
+        v.currentTime = 0;
+      });
+      v.addEventListener('pause', () => {
+        // Only remove 'playing' on explicit pause, not on seek
+        if (!v.seeking) {
+          setTimeout(() => {
+            if (v.paused) wrap.classList.remove('playing');
+          }, 100);
+        }
+      });
+      v.addEventListener('play', () => {
+        wrap.classList.add('playing');
+      });
+    });
+  });
 
   /* ── STATS COUNTER ── */
   const statsObserver = new IntersectionObserver((entries) => {
