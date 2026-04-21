@@ -76,7 +76,14 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Rockwell Film & Photo — Wedding Videography & Photography</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMGEwOTA2Ii8+CiAgPHRleHQgeD0iMTYiIHk9IjIzIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI0MDAiIAogICAgICAgIGZpbGw9IiNjOWE4NGMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc3R5bGU9Iml0YWxpYyI+UjwvdGV4dD4KPC9zdmc+" />
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -96,6 +103,9 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   html { scroll-behavior: smooth; }
+
+  /* Offset scroll targets so fixed nav doesn't cover section headings */
+  section[id], div[id] { scroll-margin-top: 100px; }
 
   body {
     background: var(--black);
@@ -3418,9 +3428,23 @@
     // On page load, if URL is /section, scroll to #section
     const path = window.location.pathname.replace(/^\//, '');
     const validSections = ['home','films','photos','pricing','timeline','about','faq','portal','contact','previews','process','testimonials','letter','stats','memory-wall'];
+    
+    // Helper: scroll to element with nav offset, waiting for layout to settle
+    function scrollToSection(el) {
+      if (!el) return;
+      // Wait two animation frames so any layout shifts (lazy images, fonts) settle
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const navHeight = 88;
+          const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight;
+          window.scrollTo({ top, behavior: 'smooth' });
+        });
+      });
+    }
+    
     if (path && validSections.includes(path)) {
       const el = document.getElementById(path);
-      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+      if (el) setTimeout(() => scrollToSection(el), 100);
     }
 
     // On scroll, update the URL to /section (no hash)
@@ -3446,7 +3470,7 @@
         if (validSections.includes(id)) {
           e.preventDefault();
           const el = document.getElementById(id);
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
+          scrollToSection(el);
           window.history.pushState(null, '', '/' + id);
         }
       }
