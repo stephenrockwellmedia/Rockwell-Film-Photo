@@ -109,6 +109,15 @@ a { color: var(--gold); text-decoration: none; }
 .w-upload-status.error { color: #e08080; }
 .w-upload-status.success { color: var(--gold-light); }
 
+.w-upload-disclaimer {
+  margin-top: 14px;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
+  padding: 0 8px;
+}
+
 /* Gallery */
 .w-gallery {
   max-width: 1200px;
