@@ -1,0 +1,6 @@
+src/
+functions/
+wrangler.jsonc
+.gitignore
+.assetsignore
+README.md
