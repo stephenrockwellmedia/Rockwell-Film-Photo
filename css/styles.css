@@ -227,13 +227,30 @@
     display: block;
   }
 
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--cream);
+    max-width: 600px;
+    margin: -16px auto 28px;
+    padding: 0 20px;
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+  }
+  .hero-tagline em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
   .hero-sub {
     font-size: 0.75rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--cream);
     opacity: 0;
-    animation: fadeUp 1s 1.2s forwards;
+    animation: fadeUp 1s 1.4s forwards;
     margin-bottom: 48px;
   }
 
@@ -243,7 +260,7 @@
     justify-content: center;
     flex-wrap: wrap;
     opacity: 0;
-    animation: fadeUp 1s 1.5s forwards;
+    animation: fadeUp 1s 1.7s forwards;
   }
 
   .btn-primary {
