@@ -95,6 +95,25 @@ async function uploadOne(file, index, total) {
     const txt = await res.text().catch(() => '');
     throw new Error(`Upload failed (${res.status}) ${txt}`);
   }
+  const data = await res.json();
+  if (data.key && data.token) saveOwnership(data.key, data.token);
+}
+
+// Track which uploads belong to this browser
+const OWN_KEY = `wall_${weddingId}_owned`;
+function loadOwned() {
+  try { return JSON.parse(localStorage.getItem(OWN_KEY) || '{}'); }
+  catch { return {}; }
+}
+function saveOwnership(key, token) {
+  const owned = loadOwned();
+  owned[key] = token;
+  localStorage.setItem(OWN_KEY, JSON.stringify(owned));
+}
+function clearOwnership(key) {
+  const owned = loadOwned();
+  delete owned[key];
+  localStorage.setItem(OWN_KEY, JSON.stringify(owned));
 }
 
 async function handleFiles(files) {
@@ -148,16 +167,23 @@ async function loadGallery() {
     }
     emptyState.hidden = true;
 
+    const owned = loadOwned();
     gallery.innerHTML = items.map((item, i) => {
       const isVideo = (item.type || '').startsWith('video/');
       const delay = `style="animation-delay:${Math.min(i, 20) * 0.03}s"`;
+      const isOwn = !!owned[item.key];
+      const delBtn = isOwn
+        ? `<button class="w-tile-del" data-key="${item.key}" aria-label="Delete">×</button>`
+        : '';
       if (isVideo) {
-        return `<div class="w-tile video" data-url="${item.url}" data-type="video" ${delay}>
+        return `<div class="w-tile video" data-url="${item.url}" data-type="video" data-key="${item.key}" ${delay}>
           <video src="${item.url}" muted playsinline preload="metadata"></video>
+          ${delBtn}
         </div>`;
       }
-      return `<div class="w-tile" data-url="${item.url}" data-type="image" ${delay}>
+      return `<div class="w-tile" data-url="${item.url}" data-type="image" data-key="${item.key}" ${delay}>
         <img src="${item.url}" alt="" loading="lazy" />
+        ${delBtn}
       </div>`;
     }).join('');
   } catch (err) {
@@ -165,8 +191,34 @@ async function loadGallery() {
   }
 }
 
-// Lightbox
-gallery.addEventListener('click', (e) => {
+// Tile click — delete or open lightbox
+gallery.addEventListener('click', async (e) => {
+  const delBtn = e.target.closest('.w-tile-del');
+  if (delBtn) {
+    e.stopPropagation();
+    const key = delBtn.dataset.key;
+    const owned = loadOwned();
+    const token = owned[key];
+    if (!token) return;
+    if (!confirm('Delete this from the wall?')) return;
+    delBtn.disabled = true;
+    try {
+      const res = await fetch('/api/wall/delete', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ key, token })
+      });
+      if (!res.ok) throw new Error('Delete failed');
+      clearOwnership(key);
+      lastKeys = '';
+      await loadGallery();
+    } catch (err) {
+      alert(err.message || 'Delete failed');
+      delBtn.disabled = false;
+    }
+    return;
+  }
+
   const tile = e.target.closest('.w-tile');
   if (!tile) return;
   const url = tile.dataset.url;

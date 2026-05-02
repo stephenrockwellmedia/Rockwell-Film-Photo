@@ -14,6 +14,9 @@ export default {
     if (url.pathname === '/api/wall/list' && request.method === 'GET') {
       return listHandler(request, env);
     }
+    if (url.pathname === '/api/wall/delete' && request.method === 'POST') {
+      return deleteHandler(request, env);
+    }
 
     return env.ASSETS.fetch(request);
   }
@@ -32,16 +35,18 @@ async function uploadHandler(request, env) {
 
     const ext = (file.name || '').split('.').pop()?.toLowerCase().slice(0, 5) || 'bin';
     const id = crypto.randomUUID();
+    const token = crypto.randomUUID();
     const key = `wall/${w}/${Date.now()}-${id}.${ext}`;
 
     await env.WALL_BUCKET.put(key, file.stream(), {
       httpMetadata: {
         contentType: file.type || 'application/octet-stream',
         cacheControl: 'public, max-age=31536000, immutable'
-      }
+      },
+      customMetadata: { token }
     });
 
-    return json({ ok: true, key });
+    return json({ ok: true, key, token });
   } catch (err) {
     return json({ error: err.message || 'upload failed' }, 500);
   }
@@ -78,6 +83,25 @@ async function listHandler(request, env) {
       'cache-control': 'no-store'
     }
   });
+}
+
+async function deleteHandler(request, env) {
+  try {
+    const { key, token } = await request.json();
+    if (!key || !token) return json({ error: 'missing key or token' }, 400);
+    if (!key.startsWith('wall/') || key.includes('..')) return json({ error: 'bad key' }, 400);
+
+    const head = await env.WALL_BUCKET.head(key);
+    if (!head) return json({ error: 'not found' }, 404);
+
+    const stored = head.customMetadata?.token;
+    if (!stored || stored !== token) return json({ error: 'forbidden' }, 403);
+
+    await env.WALL_BUCKET.delete(key);
+    return json({ ok: true });
+  } catch (err) {
+    return json({ error: err.message || 'delete failed' }, 500);
+  }
 }
 
 function json(data, status = 200) {
