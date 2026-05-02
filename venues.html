@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wedding Venues — Rockwell Film & Photo</title>
+<meta name="description" content="A curated look at the wedding venues we've filmed and photographed across PA, WV, OH, MD and beyond." />
+<link rel="icon" href="favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/venues.css" />
+</head>
+<body>
+
+<a href="/" class="back-btn">← Back</a>
+
+<section class="v-hero">
+  <p class="v-eyebrow">Wedding Venues</p>
+  <h1 class="v-title">Where We've <em>Filmed</em></h1>
+  <p class="v-sub">A growing collection of the venues we've shot — from rustic barns to grand estates across the Mid-Atlantic.</p>
+</section>
+
+<section class="v-filter">
+  <button class="v-chip active" data-region="all">All</button>
+  <button class="v-chip" data-region="PA">Pennsylvania</button>
+  <button class="v-chip" data-region="WV">West Virginia</button>
+  <button class="v-chip" data-region="OH">Ohio</button>
+  <button class="v-chip" data-region="MD">Maryland</button>
+</section>
+
+<section class="v-grid-wrap">
+  <div class="v-grid" id="venueGrid"></div>
+  <p class="v-empty" id="venueEmpty" hidden>No venues listed in this region yet — check back soon.</p>
+</section>
+
+<section class="v-cta">
+  <h2>Booking a venue not on this list?</h2>
+  <p>We travel anywhere. Reach out and let's talk about your day.</p>
+  <a href="/#contact" class="v-btn">Start the Conversation</a>
+</section>
+
+<footer class="v-footer">
+  Rockwell Film &amp; Photo &nbsp;·&nbsp; (412) 292-5355 &nbsp;·&nbsp; rockwellfilmandphoto.com
+</footer>
+
+<script src="js/venues.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Memory Wall — Rockwell Film & Photo</title>
+<meta name="description" content="Live wedding photo & video wall." />
+<link rel="icon" href="favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/wall.css" />
+</head>
+<body>
+
+<header class="w-header">
+  <p class="w-eyebrow">Memory Wall</p>
+  <h1 class="w-title" id="coupleName">Wedding</h1>
+  <p class="w-sub">Add your photos &amp; videos — they'll show up here for everyone to see.</p>
+</header>
+
+<div class="w-upload">
+  <label class="w-upload-btn" id="uploadLabel">
+    <input type="file" id="fileInput" accept="image/*,video/*" multiple hidden />
+    <span class="w-upload-icon">+</span>
+    <span class="w-upload-text">Add Photos / Videos</span>
+  </label>
+  <div class="w-upload-progress" id="uploadProgress" hidden>
+    <div class="w-upload-bar"><div class="w-upload-fill" id="uploadFill"></div></div>
+    <p class="w-upload-status" id="uploadStatus">Uploading…</p>
+  </div>
+</div>
+
+<div class="w-gallery" id="gallery"></div>
+<p class="w-empty" id="emptyState">Be the first to share a memory.</p>
+
+<div class="w-lightbox" id="lightbox" hidden>
+  <button class="w-lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <div class="w-lightbox-content" id="lightboxContent"></div>
+</div>
+
+<footer class="w-footer">
+  Captured by <a href="/">Rockwell Film &amp; Photo</a>
+</footer>
+
+<script src="js/wall.js"></script>
+</body>
+</html>
