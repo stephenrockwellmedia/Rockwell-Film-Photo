@@ -851,6 +851,11 @@
       if (el) setTimeout(() => scrollToSection(el), 100);
     }
 
+    // While a nav-click is scrolling toward a section, ignore observer updates
+    // so intermediate sections don't overwrite the target URL
+    let navLockId = null;
+    let navLockTimer = null;
+
     // On scroll, update the URL to /section (no hash)
     const sections = document.querySelectorAll('section[id], div[id]');
     const observer = new IntersectionObserver((entries) => {
@@ -858,7 +863,7 @@
         if (entry.isIntersecting) {
           const id = entry.target.id;
           if (id && validSections.includes(id)) {
-            // Update URL without hash — supports both /section and /#section
+            if (navLockId && id !== navLockId) return;
             window.history.replaceState(null, '', '/' + id);
           }
         }
@@ -874,6 +879,9 @@
         if (validSections.includes(id)) {
           e.preventDefault();
           const el = document.getElementById(id);
+          navLockId = id;
+          clearTimeout(navLockTimer);
+          navLockTimer = setTimeout(() => { navLockId = null; }, 1200);
           scrollToSection(el);
           window.history.pushState(null, '', '/' + id);
         }
