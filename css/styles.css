@@ -237,7 +237,6 @@
     margin: -8px auto 32px;
     padding: 0 20px;
     text-shadow: 0 2px 16px rgba(0,0,0,0.6);
-    text-wrap: balance;
     opacity: 0;
     animation: fadeUp 1s 1.2s forwards;
   }
