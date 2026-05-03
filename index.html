@@ -962,13 +962,29 @@
 
 
 <script>
-function handleBannerSignup(e) {
+async function handleBannerSignup(e) {
   e.preventDefault();
   const form = document.getElementById('promoBannerForm');
   const email = form.querySelector('input[type="email"]').value;
-  // Connect to your email service here (Mailchimp, ConvertKit, Formspree, etc.)
-  // fetch('/api/subscribe', { method:'POST', body: JSON.stringify({email}), headers:{'Content-Type':'application/json'} });
-  form.innerHTML = '<span style="font-size:0.65rem;font-weight:600;letter-spacing:0.15em;color:#0a0906;">✓ Check your inbox — your free access is on its way!</span>';
+  const btn = form.querySelector('button[type="submit"]');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://formspree.io/f/xdabarjg', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) {
+      form.innerHTML = '<span style="font-size:0.65rem;font-weight:600;letter-spacing:0.15em;color:#0a0906;">✓ You’re in — check your inbox for free access!</span>';
+    } else {
+      btn.textContent = 'Try Again';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    btn.textContent = 'Try Again';
+    btn.disabled = false;
+  }
 }
 </script>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
