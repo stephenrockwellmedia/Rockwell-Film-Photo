@@ -95,10 +95,13 @@
 <!-- ── PROMO BANNER ── -->
 <div class="promo-banner" id="promoBanner">
   <div class="promo-banner-text">
-    Book now &amp; receive a free&nbsp;<em>Digital Guest Memory Wall</em>&nbsp;—&nbsp;your guests relive every moment
+    🎁 Free&nbsp;<em>Digital Guest Memory Wall</em>&nbsp;— for any couple, no booking required
   </div>
   <div class="promo-divider"></div>
-  <a href="wedding-memories-explainer.html" target="_blank" class="promo-demo-btn">See Demo →</a>
+  <form class="promo-email-form" id="promoBannerForm" onsubmit="handleBannerSignup(event)">
+    <input type="email" class="promo-email-input" placeholder="Enter your email" required aria-label="Email address" />
+    <button type="submit" class="promo-email-btn">Claim Free Access →</button>
+  </form>
   <button class="promo-close" onclick="closeBanner()" aria-label="Close">✕</button>
 </div>
 
@@ -957,6 +960,16 @@
 </footer>
 
 
+<script>
+function handleBannerSignup(e) {
+  e.preventDefault();
+  const form = document.getElementById('promoBannerForm');
+  const email = form.querySelector('input[type="email"]').value;
+  // Connect to your email service here (Mailchimp, ConvertKit, Formspree, etc.)
+  // fetch('/api/subscribe', { method:'POST', body: JSON.stringify({email}), headers:{'Content-Type':'application/json'} });
+  form.innerHTML = '<span style="font-size:0.65rem;font-weight:600;letter-spacing:0.15em;color:#0a0906;">✓ Check your inbox — your free access is on its way!</span>';
+}
+</script>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="js/main.js"></script>
 </body>
