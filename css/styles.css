@@ -1683,3 +1683,51 @@
       #memory-wall > div > div:first-child { display:none; }
       #memory-wall > div { grid-template-columns:1fr !important; }
     }
+
+/* ── MOBILE HERO FIXES ── */
+@media (max-width: 768px) {
+  /* Hide the big "Rockwell Film & Photo" title */
+  .hero-title { display: none; }
+
+  /* Bigger tagline */
+  .hero-tagline {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding: 0 12px;
+  }
+
+  /* Push buttons down a bit */
+  .hero-buttons {
+    margin-top: 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .btn-primary, .btn-outline {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+
+  /* Pull scroll indicator out of absolute and center below buttons */
+  .hero-scroll {
+    position: static;
+    transform: none;
+    margin-top: 40px;
+  }
+
+  /* Stack hero content with scroll underneath */
+  #home {
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 48px;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
