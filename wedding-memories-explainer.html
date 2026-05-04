@@ -11,9 +11,21 @@
 </head>
 <body>
 
+<!-- ── PROMO BANNER ── -->
+<div class="promo-banner" id="promoBanner">
+  <div class="promo-banner-text">
+    Free&nbsp;<em>Digital Guest Memory Wall</em>&nbsp;&mdash;&nbsp;for any couple, no booking required
+  </div>
+  <div class="promo-divider"></div>
+  <form class="promo-email-form" id="promoBannerForm" onsubmit="handleBannerSignup(event)">
+    <input type="email" class="promo-email-input" placeholder="Your email address" required aria-label="Email address" />
+    <button type="submit" class="promo-email-btn">Claim Free Access</button>
+  </form>
+</div>
+
 <!-- ── BACK BUTTON ── -->
 <a href="/" style="
-  position: fixed; top: 20px; left: 20px; z-index: 999;
+  position: fixed; top: calc(var(--banner-h) + 14px); left: 20px; z-index: 999;
   display: inline-flex; align-items: center; gap: 8px;
   font-family: 'Montserrat', sans-serif;
   font-size: 0.58rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
@@ -203,5 +215,43 @@
 </section>
 
 <script src="js/wedding-memories.js"></script>
+<script>
+async function handleBannerSignup(e) {
+  e.preventDefault();
+  const form = document.getElementById('promoBannerForm');
+  const email = form.querySelector('input[type="email"]').value;
+  const btn = form.querySelector('button[type="submit"]');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://formspree.io/f/xdabarjg', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) {
+      form.innerHTML = '<span style="font-size:0.65rem;font-weight:600;letter-spacing:0.15em;color:#0a0906;">✓ You\u2019re in \u2014 check your inbox!</span>';
+    } else {
+      btn.textContent = 'Try Again';
+      btn.disabled = false;
+    }
+  } catch (err) {
+    btn.textContent = 'Try Again';
+    btn.disabled = false;
+  }
+}
+(function syncBannerHeight() {
+  const banner = document.getElementById('promoBanner');
+  if (!banner) return;
+  const apply = () => {
+    const h = Math.ceil(banner.getBoundingClientRect().height);
+    if (h > 0) document.documentElement.style.setProperty('--banner-h', h + 'px');
+  };
+  apply();
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(apply).observe(banner);
+  window.addEventListener('resize', apply);
+  window.addEventListener('load', apply);
+})();
+</script>
 </body>
 </html>
