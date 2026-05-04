@@ -25,11 +25,14 @@
     overflow-x: hidden;
   }
 
+  :root { --banner-h: 44px; }
+
   /* ── PROMO BANNER ── */
   .promo-banner {
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 200;
+    min-height: var(--banner-h);
     background: linear-gradient(90deg, #b8922e 0%, #c9a84c 30%, #e8c97a 50%, #c9a84c 70%, #b8922e 100%);
     background-size: 200% 100%;
     animation: bannerShimmer 4s ease-in-out infinite;
@@ -74,53 +77,7 @@
     flex-shrink: 0;
   }
 
-  .promo-email-form {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    flex-shrink: 0;
-    border-radius: 2px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(10,9,6,0.15);
-  }
-
-  .promo-email-input {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.63rem;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    background: rgba(255,248,230,0.92);
-    border: none;
-    border-right: 1px solid rgba(10,9,6,0.12);
-    color: #0a0906;
-    padding: 0 16px;
-    outline: none;
-    width: clamp(150px, 20vw, 215px);
-    height: 32px;
-  }
-
-  .promo-email-input::placeholder { color: rgba(10,9,6,0.38); }
-  .promo-email-input:focus { background: #fffdf5; }
-
-  .promo-email-btn {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.56rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    background: #0a0906;
-    color: #e8c97a;
-    border: none;
-    padding: 0 16px;
-    height: 32px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s, color 0.2s;
-  }
-
-  .promo-email-btn:hover { background: #1e1a10; color: #f0e6d0; }
-
-  .promo-learn-btn {
+  .promo-demo-btn {
     font-family: 'Montserrat', sans-serif;
     font-size: clamp(0.52rem, 1.5vw, 0.6rem);
     font-weight: 600;
@@ -133,19 +90,91 @@
     text-decoration: none;
     border-radius: 2px;
     white-space: nowrap;
-    flex-shrink: 0;
     transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
   }
-
-  .promo-learn-btn:hover {
+  .promo-demo-btn:hover {
     background: rgba(10,9,6,0.28);
     border-color: rgba(10,9,6,0.6);
   }
 
-/* ── NAV ── */
+  .promo-close {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: rgba(10,9,6,0.45);
+    font-size: 0.75rem;
+    cursor: pointer; padding: 4px 6px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .promo-close:hover { color: rgba(10,9,6,0.8); }
+
+  .promo-email-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .promo-email-input {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(0.6rem, 1.6vw, 0.7rem);
+    font-weight: 400;
+    color: #0a0906;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(10,9,6,0.4);
+    padding: 7px 12px;
+    border-radius: 2px;
+    width: clamp(160px, 22vw, 220px);
+    outline: none;
+  }
+  .promo-email-input::placeholder { color: rgba(10,9,6,0.5); }
+  .promo-email-input:focus { border-color: rgba(10,9,6,0.8); background: #fff; }
+  .promo-email-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(0.52rem, 1.5vw, 0.6rem);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #0a0906;
+    background: rgba(10,9,6,0.18);
+    border: 1px solid rgba(10,9,6,0.5);
+    padding: 7px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .promo-email-btn:hover {
+    background: rgba(10,9,6,0.32);
+    border-color: rgba(10,9,6,0.7);
+  }
+  .promo-learn-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(0.52rem, 1.5vw, 0.6rem);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #0a0906;
+    background: transparent;
+    border: 1px solid rgba(10,9,6,0.4);
+    padding: 7px 14px;
+    text-decoration: none;
+    border-radius: 2px;
+    white-space: nowrap;
+    transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+  .promo-learn-btn:hover {
+    background: rgba(10,9,6,0.18);
+    border-color: rgba(10,9,6,0.65);
+  }
+
+  /* ── NAV ── */
   nav {
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: var(--banner-h, 44px); left: 0; right: 0;
     z-index: 100;
     display: flex;
     align-items: center;
@@ -1450,9 +1479,23 @@
 
   /* ── MOBILE ── */
   @media (max-width: 900px) {
-    nav { padding: 20px 24px; }
+    :root { --banner-h: 40px; }
+    nav { padding: 14px 20px; }
     .nav-links, .nav-cta { display: none; }
     .nav-burger { display: flex; }
+
+    .promo-banner {
+      padding: 7px 12px;
+      gap: 8px;
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+    .promo-banner-text { font-size: 0.6rem; letter-spacing: 0.12em; }
+    .promo-banner-text em { font-size: 0.85rem; letter-spacing: 0.04em; }
+    .promo-divider, .promo-email-form { display: none; }
+    .promo-learn-btn { padding: 5px 10px; font-size: 0.55rem; letter-spacing: 0.14em; }
+
+    #home { height: 100svh; padding-top: var(--banner-h); }
 
     section { padding: 80px 24px !important; }
 
@@ -1683,51 +1726,3 @@
       #memory-wall > div > div:first-child { display:none; }
       #memory-wall > div { grid-template-columns:1fr !important; }
     }
-
-/* ── MOBILE HERO FIXES ── */
-@media (max-width: 768px) {
-  /* Hide the big "Rockwell Film & Photo" title */
-  .hero-title { display: none; }
-
-  /* Bigger tagline */
-  .hero-tagline {
-    font-size: clamp(1.6rem, 6vw, 2.2rem);
-    margin-top: 0;
-    margin-bottom: 20px;
-    padding: 0 12px;
-  }
-
-  /* Push buttons down a bit */
-  .hero-buttons {
-    margin-top: 24px;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .btn-primary, .btn-outline {
-    width: 100%;
-    max-width: 300px;
-    text-align: center;
-  }
-
-  /* Pull scroll indicator out of absolute and center below buttons */
-  .hero-scroll {
-    position: static;
-    transform: none;
-    margin-top: 40px;
-  }
-
-  /* Stack hero content with scroll underneath */
-  #home {
-    flex-direction: column;
-    justify-content: center;
-    padding-bottom: 48px;
-  }
-
-  .hero-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-}
