@@ -1636,9 +1636,15 @@
     .promo-email-btn { font-size: 0.55rem; padding: 7px 10px; letter-spacing: 0.14em; }
     .promo-learn-btn { display: none; }
 
-    .nav-logo { max-width: 60vw; }
+    .nav-logo { max-width: 65vw; }
     .nav-logo-name { font-size: 1rem; letter-spacing: 0.1em; line-height: 1.1; }
-    .nav-logo-tag { display: none; }
+    .nav-logo-tag {
+      font-size: 0.42rem;
+      letter-spacing: 0.14em;
+      white-space: normal;
+      line-height: 1.35;
+      margin-top: 3px;
+    }
 
     #home {
       height: 100svh;
