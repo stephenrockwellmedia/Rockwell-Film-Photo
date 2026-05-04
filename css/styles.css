@@ -1510,6 +1510,7 @@
       padding: calc(var(--banner-h) + 110px) 24px 80px !important;
       align-items: flex-start;
     }
+    .hero-scroll { display: none; }
 
     section { padding: 80px 24px !important; }
 
