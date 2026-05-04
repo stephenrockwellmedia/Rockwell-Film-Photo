@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>Admin — Memory Wall</title>
+<link rel="icon" href="favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+<!-- Login gate -->
+<div id="loginGate" class="ad-gate">
+  <div class="ad-gate-box">
+    <p class="ad-logo">Rockwell <em>Film &amp; Photo</em></p>
+    <p class="ad-sub">Memory Wall Admin</p>
+    <input type="password" id="adminPass" placeholder="Password" autocomplete="current-password" />
+    <button id="adminLogin">Sign In</button>
+    <p id="adminErr" class="ad-err" hidden></p>
+  </div>
+</div>
+
+<!-- App -->
+<div id="adminApp" hidden>
+  <header class="ad-header">
+    <div>
+      <p class="ad-eyebrow">Memory Wall</p>
+      <h1 class="ad-title">Admin</h1>
+    </div>
+    <button id="logoutBtn" class="ad-btn-ghost">Sign Out</button>
+  </header>
+
+  <!-- Wedding list view -->
+  <section id="weddingsView">
+    <div class="ad-section-header">
+      <h2>All Weddings</h2>
+      <button id="refreshBtn" class="ad-btn-ghost">Refresh</button>
+    </div>
+    <div id="weddingList" class="ad-wedding-list"></div>
+    <p id="noWeddings" class="ad-empty" hidden>No uploads yet.</p>
+  </section>
+
+  <!-- Photos view -->
+  <section id="photosView" hidden>
+    <div class="ad-section-header">
+      <button id="backBtn" class="ad-btn-ghost">← All Weddings</button>
+      <h2 id="photosTitle"></h2>
+    </div>
+    <div id="photoGrid" class="ad-photo-grid"></div>
+    <p id="noPhotos" class="ad-empty" hidden>No photos in this wedding.</p>
+  </section>
+</div>
+
+<!-- Lightbox -->
+<div class="ad-lightbox" id="lightbox" hidden>
+  <button class="ad-lightbox-close" id="lightboxClose">&times;</button>
+  <div class="ad-lightbox-content" id="lightboxContent"></div>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

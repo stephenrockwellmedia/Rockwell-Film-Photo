@@ -116,6 +116,28 @@ function clearOwnership(key) {
   localStorage.setItem(OWN_KEY, JSON.stringify(owned));
 }
 
+// Stable per-browser reporter ID for dedup
+function getReporterId() {
+  let id = localStorage.getItem('wall_reporter_id');
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2));
+    localStorage.setItem('wall_reporter_id', id);
+  }
+  return id;
+}
+
+// Track which photos this browser already reported (so we hide the option)
+const REPORTED_KEY = `wall_${weddingId}_reported`;
+function loadReported() {
+  try { return JSON.parse(localStorage.getItem(REPORTED_KEY) || '{}'); }
+  catch { return {}; }
+}
+function markReported(key) {
+  const r = loadReported();
+  r[key] = true;
+  localStorage.setItem(REPORTED_KEY, JSON.stringify(r));
+}
+
 async function handleFiles(files) {
   if (!files.length) return;
   uploadLabel.classList.add('uploading');
@@ -168,22 +190,26 @@ async function loadGallery() {
     emptyState.hidden = true;
 
     const owned = loadOwned();
+    const reported = loadReported();
     gallery.innerHTML = items.map((item, i) => {
       const isVideo = (item.type || '').startsWith('video/');
       const delay = `style="animation-delay:${Math.min(i, 20) * 0.03}s"`;
       const isOwn = !!owned[item.key];
-      const delBtn = isOwn
+      const isReported = !!reported[item.key];
+      const cornerBtn = isOwn
         ? `<button class="w-tile-del" data-key="${item.key}" aria-label="Delete">×</button>`
-        : '';
+        : (isReported
+          ? ''
+          : `<button class="w-tile-menu" data-key="${item.key}" aria-label="More">⋮</button>`);
       if (isVideo) {
         return `<div class="w-tile video" data-url="${item.url}" data-type="video" data-key="${item.key}" ${delay}>
           <video src="${item.url}" muted playsinline preload="metadata"></video>
-          ${delBtn}
+          ${cornerBtn}
         </div>`;
       }
       return `<div class="w-tile" data-url="${item.url}" data-type="image" data-key="${item.key}" ${delay}>
         <img src="${item.url}" alt="" loading="lazy" />
-        ${delBtn}
+        ${cornerBtn}
       </div>`;
     }).join('');
   } catch (err) {
@@ -191,8 +217,37 @@ async function loadGallery() {
   }
 }
 
-// Tile click — delete or open lightbox
+// Tile click — report, delete, or open lightbox
 gallery.addEventListener('click', async (e) => {
+  const reportBtn = e.target.closest('.w-tile-menu');
+  if (reportBtn) {
+    e.stopPropagation();
+    const key = reportBtn.dataset.key;
+    if (!confirm('Report this photo as inappropriate? After 2 reports it will be removed automatically.')) return;
+    reportBtn.disabled = true;
+    try {
+      const res = await fetch('/api/wall/report', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ key, reporterId: getReporterId() })
+      });
+      if (!res.ok) throw new Error('Report failed');
+      const data = await res.json();
+      markReported(key);
+      if (data.deleted) {
+        alert('Thanks — that photo received enough reports and was removed.');
+      } else {
+        alert('Reported. Thanks.');
+      }
+      lastKeys = '';
+      await loadGallery();
+    } catch (err) {
+      alert(err.message || 'Report failed');
+      reportBtn.disabled = false;
+    }
+    return;
+  }
+
   const delBtn = e.target.closest('.w-tile-del');
   if (delBtn) {
     e.stopPropagation();
