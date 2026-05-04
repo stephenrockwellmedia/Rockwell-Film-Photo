@@ -1511,6 +1511,15 @@
       align-items: flex-start;
     }
     .hero-scroll { display: none; }
+    .hero-title { font-weight: 600; }
+    .hero-tagline {
+      background: rgba(10,9,6,0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 16px 18px;
+      border-radius: 6px;
+      max-width: 520px;
+    }
 
     section { padding: 80px 24px !important; }
 

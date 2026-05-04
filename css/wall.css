@@ -22,6 +22,129 @@ body {
 
 a { color: var(--gold); text-decoration: none; }
 
+:root { --banner-h: 44px; }
+
+/* ── PROMO BANNER ── */
+.promo-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  min-height: var(--banner-h);
+  background: linear-gradient(90deg, #b8922e 0%, #c9a84c 30%, #e8c97a 50%, #c9a84c 70%, #b8922e 100%);
+  background-size: 200% 100%;
+  animation: bannerShimmer 4s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 24px);
+  padding: 10px clamp(12px, 3vw, 40px);
+  flex-wrap: wrap;
+}
+@keyframes bannerShimmer {
+  0%   { background-position: 100% 0; }
+  50%  { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+.promo-banner-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(0.58rem, 1.8vw, 0.72rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #0a0906;
+  text-align: center;
+  line-height: 1.4;
+}
+.promo-banner-text em {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+.promo-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(10,9,6,0.25);
+  flex-shrink: 0;
+}
+.promo-email-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.promo-email-input {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(0.6rem, 1.6vw, 0.7rem);
+  color: #0a0906;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(10,9,6,0.4);
+  padding: 7px 12px;
+  border-radius: 2px;
+  width: clamp(160px, 22vw, 220px);
+  outline: none;
+}
+.promo-email-input::placeholder { color: rgba(10,9,6,0.5); }
+.promo-email-input:focus { border-color: rgba(10,9,6,0.8); background: #fff; }
+.promo-email-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(0.52rem, 1.5vw, 0.6rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #0a0906;
+  background: rgba(10,9,6,0.18);
+  border: 1px solid rgba(10,9,6,0.5);
+  padding: 7px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+}
+.promo-email-btn:hover {
+  background: rgba(10,9,6,0.32);
+  border-color: rgba(10,9,6,0.7);
+}
+.promo-learn-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(0.52rem, 1.5vw, 0.6rem);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #0a0906;
+  background: transparent;
+  border: 1px solid rgba(10,9,6,0.4);
+  padding: 7px 14px;
+  text-decoration: none;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.promo-learn-btn:hover {
+  background: rgba(10,9,6,0.18);
+  border-color: rgba(10,9,6,0.65);
+}
+
+body { padding-top: var(--banner-h); }
+
+@media (max-width: 900px) {
+  .promo-banner {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+  .promo-banner-text { font-size: 0.58rem; letter-spacing: 0.12em; line-height: 1.3; }
+  .promo-banner-text em { font-size: 0.85rem; letter-spacing: 0.04em; }
+  .promo-divider, .promo-learn-btn { display: none; }
+  .promo-email-form { width: 100%; max-width: 360px; gap: 6px; }
+  .promo-email-input { flex: 1; width: auto; font-size: 0.7rem; padding: 7px 10px; }
+  .promo-email-btn { font-size: 0.55rem; padding: 7px 10px; letter-spacing: 0.14em; }
+}
+
 /* Header */
 .w-header {
   text-align: center;
