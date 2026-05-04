@@ -986,6 +986,24 @@ async function handleBannerSignup(e) {
     btn.disabled = false;
   }
 }
+
+// Keep --banner-h in sync with the actual rendered banner height so the
+// fixed nav and the hero padding always clear it, no matter how the
+// promo content wraps on a given device.
+(function syncBannerHeight() {
+  const banner = document.getElementById('promoBanner');
+  if (!banner) return;
+  const apply = () => {
+    const h = Math.ceil(banner.getBoundingClientRect().height);
+    if (h > 0) document.documentElement.style.setProperty('--banner-h', h + 'px');
+  };
+  apply();
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(apply).observe(banner);
+  }
+  window.addEventListener('resize', apply);
+  window.addEventListener('load', apply);
+})();
 </script>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="js/main.js"></script>

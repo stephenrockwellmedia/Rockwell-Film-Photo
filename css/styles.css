@@ -370,6 +370,7 @@
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: var(--muted);
+    text-indent: 0.25em;
   }
   .scroll-line {
     width: 1px;
@@ -1502,7 +1503,9 @@
     .promo-email-btn { font-size: 0.55rem; padding: 7px 10px; letter-spacing: 0.14em; }
     .promo-learn-btn { display: none; }
 
-    #home { height: 100svh; padding-top: var(--banner-h); }
+    .nav-logo { font-size: 1rem; letter-spacing: 0.1em; max-width: 60vw; line-height: 1.1; }
+
+    #home { height: 100svh; padding-top: calc(var(--banner-h) + 60px); }
 
     section { padding: 80px 24px !important; }
 
