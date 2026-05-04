@@ -1479,21 +1479,28 @@
 
   /* ── MOBILE ── */
   @media (max-width: 900px) {
-    :root { --banner-h: 40px; }
+    :root { --banner-h: 108px; }
     nav { padding: 14px 20px; }
     .nav-links, .nav-cta { display: none; }
     .nav-burger { display: flex; }
 
     .promo-banner {
-      padding: 7px 12px;
-      gap: 8px;
+      flex-direction: column;
       flex-wrap: nowrap;
-      overflow: hidden;
+      gap: 6px;
+      padding: 8px 12px;
     }
-    .promo-banner-text { font-size: 0.6rem; letter-spacing: 0.12em; }
+    .promo-banner-text {
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      line-height: 1.3;
+    }
     .promo-banner-text em { font-size: 0.85rem; letter-spacing: 0.04em; }
-    .promo-divider, .promo-email-form { display: none; }
-    .promo-learn-btn { padding: 5px 10px; font-size: 0.55rem; letter-spacing: 0.14em; }
+    .promo-divider { display: none; }
+    .promo-email-form { width: 100%; max-width: 360px; gap: 6px; }
+    .promo-email-input { flex: 1; width: auto; font-size: 0.7rem; padding: 7px 10px; }
+    .promo-email-btn { font-size: 0.55rem; padding: 7px 10px; letter-spacing: 0.14em; }
+    .promo-learn-btn { display: none; }
 
     #home { height: 100svh; padding-top: var(--banner-h); }
 
