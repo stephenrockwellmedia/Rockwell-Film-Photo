@@ -193,6 +193,8 @@
     color: var(--gold);
     text-decoration: none;
     text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .nav-links {
@@ -327,6 +329,11 @@
     animation: fadeUp 1s 1.7s forwards;
   }
 
+  /* Hide SCROLL when there isn't room for it under the hero buttons */
+  @media (max-height: 820px) {
+    .hero-scroll { display: none; }
+  }
+
   .btn-primary {
     font-size: 0.65rem;
     font-weight: 600;
@@ -355,7 +362,7 @@
 
   .hero-scroll {
     position: absolute;
-    bottom: 40px;
+    bottom: 32px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
