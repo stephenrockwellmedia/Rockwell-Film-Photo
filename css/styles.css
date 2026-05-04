@@ -330,8 +330,11 @@
     animation: fadeUp 1s 1.7s forwards;
   }
 
-  /* Hide SCROLL when there isn't room for it under the hero buttons */
-  @media (max-height: 820px) {
+  /* On shorter viewports, top-align the hero so the title doesn't get
+     pushed up into the nav, and hide the SCROLL indicator since it
+     starts crowding the buttons. */
+  @media (max-height: 950px) {
+    #home { align-items: flex-start; }
     .hero-scroll { display: none; }
   }
 
