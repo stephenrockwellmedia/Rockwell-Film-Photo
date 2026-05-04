@@ -240,6 +240,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    padding-top: calc(var(--banner-h) + 80px);
   }
 
   .hero-bg {
@@ -1483,6 +1484,18 @@
     color: var(--muted);
     position: relative;
     z-index: 1;
+  }
+
+  /* ── NARROW DESKTOP / TABLET ── */
+  @media (max-width: 1200px) {
+    .promo-banner { gap: 14px; padding: 9px 16px; }
+    .promo-banner-text { font-size: 0.62rem; }
+    .promo-banner-text em { font-size: 0.95rem; }
+    .promo-divider:last-of-type, .promo-learn-btn { display: none; }
+    .promo-email-input { width: 180px; }
+    .nav-links { gap: 22px; }
+    .nav-links a { font-size: 0.62rem; letter-spacing: 0.18em; }
+    nav { padding: 20px 28px; }
   }
 
   /* ── MOBILE ── */
