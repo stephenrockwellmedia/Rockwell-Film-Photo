@@ -370,7 +370,7 @@
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: var(--muted);
-    text-indent: 0.25em;
+    padding-left: 0.25em;
   }
   .scroll-line {
     width: 1px;
@@ -1505,7 +1505,11 @@
 
     .nav-logo { font-size: 1rem; letter-spacing: 0.1em; max-width: 60vw; line-height: 1.1; }
 
-    #home { height: 100svh; padding-top: calc(var(--banner-h) + 60px); }
+    #home {
+      height: 100svh;
+      padding: calc(var(--banner-h) + 110px) 24px 80px !important;
+      align-items: flex-start;
+    }
 
     section { padding: 80px 24px !important; }
 
