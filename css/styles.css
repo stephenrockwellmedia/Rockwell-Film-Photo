@@ -1645,6 +1645,7 @@
       line-height: 1.35;
       margin-top: 3px;
     }
+    .nav-logo-regions { display: none; }
 
     #home {
       height: 100svh;
