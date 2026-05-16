@@ -325,6 +325,18 @@
     font-style: italic;
     color: var(--gold-light);
   }
+  .hero-tagline-solid {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.78em;
+    letter-spacing: 0.02em;
+    color: var(--white);
+    text-shadow: 0 2px 20px rgba(0,0,0,0.85);
+    line-height: 1.55;
+  }
 
   .hero-sub {
     font-size: 0.75rem;
