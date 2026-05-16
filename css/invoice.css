@@ -163,6 +163,20 @@
 
     textarea { resize: vertical; min-height: 80px; }
 
+    /* Date inputs — recolor the calendar icon so it's visible on dark bg */
+    input[type="date"] {
+      color-scheme: dark;
+      position: relative;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(70%) sepia(60%) saturate(450%) hue-rotate(0deg) brightness(95%);
+      cursor: pointer;
+      opacity: 1;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+      filter: invert(85%) sepia(85%) saturate(500%) hue-rotate(355deg) brightness(105%);
+    }
+
     /* ── LINE ITEMS ── */
     .line-items {
       border: 1px solid rgba(201,168,76,0.15);
