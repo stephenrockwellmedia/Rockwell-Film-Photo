@@ -198,11 +198,13 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
         `Hi ${name},\n\nThank you for choosing Rockwell Film & Photo!\n\nPlease use the secure link below to complete your payment of $${amount.toFixed(2)}:\n\n${paymentUrl}\n\nInvoice: ${invoiceNo}\nServices: ${description}${wedding ? '\nWedding Date: ' + new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : ''}\n\nIf you have any questions, don't hesitate to reach out!\n\nWarm regards,\nStephen Rockwell\nRockwell Film & Photo\n(412) 292-5355\nrockwellfilmandphoto.com`
       );
       const mailtoLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
+      const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${emailSubject}&body=${emailBody}`;
 
       // Store for copy/email buttons
       document.getElementById('paymentLinkDisplay').textContent = paymentUrl;
       document.getElementById('paymentLinkDisplay').dataset.url = paymentUrl;
       document.getElementById('paymentLinkDisplay').dataset.mailto = mailtoLink;
+      document.getElementById('paymentLinkDisplay').dataset.gmail = gmailLink;
       document.getElementById('paymentLinkDisplay').dataset.amount = amount.toFixed(2);
       document.getElementById('paymentLinkDisplay').dataset.client = name;
       document.getElementById('paymentLinkDisplay').dataset.email = email;
@@ -241,7 +243,8 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
 
   function emailClient() {
     const display = document.getElementById('paymentLinkDisplay');
-    window.location.href = display.dataset.mailto;
+    // Open Gmail compose in a new tab — works regardless of OS default mail handler.
+    window.open(display.dataset.gmail, '_blank', 'noopener');
   }
 
   function showStatus(msg, type) {
