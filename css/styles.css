@@ -1960,6 +1960,19 @@
     .previews-strip { gap: 12px; padding: 0 18px 20px; scroll-snap-type: x mandatory; }
     .preview-card { min-width: 75vw; scroll-snap-align: start; }
 
+    /* Play button always visible on mobile (no hover state on touch) */
+    .preview-play {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+      width: 64px;
+      height: 64px;
+      border-width: 2px;
+      background: rgba(10,9,6,0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .preview-play svg { width: 20px; height: 20px; margin-left: 4px; }
+
     /* Stats */
     .stats-grid { grid-template-columns: 1fr !important; }
     .stat-item { padding: 40px 24px; }
