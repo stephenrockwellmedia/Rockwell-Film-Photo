@@ -292,20 +292,21 @@
 
   .hero-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(3.5rem, 8vw, 8rem);
+    font-size: clamp(3rem, 7vw, 6.5rem);
     font-weight: 300;
-    line-height: 0.9;
+    line-height: 0.95;
     letter-spacing: -0.01em;
     color: var(--white);
     margin-bottom: 32px;
     opacity: 0;
     animation: fadeUp 1s 0.9s forwards;
+    white-space: nowrap;
   }
 
   .hero-title em {
     font-style: italic;
     color: var(--gold-light);
-    display: block;
+    display: inline;
   }
 
   .hero-tagline {
