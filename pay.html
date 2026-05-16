@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Payment | Rockwell Film & Photo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    :root {
+      --black: #080807;
+      --black-2: #0f0e0b;
+      --gold: #c9a84c;
+      --gold-light: #e0c878;
+      --white: #f5f2ea;
+      --muted: #6b6555;
+      --cream: #b8b3a4;
+      --serif: 'Cormorant Garamond', serif;
+      --sans: 'Montserrat', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--sans);
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 40px 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .brand {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .brand-name em { font-style: italic; color: var(--gold-light); }
+    .brand-tag {
+      margin-top: 6px;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--black-2);
+      border: 1px solid rgba(201,168,76,0.18);
+      padding: 36px 32px;
+    }
+    .invoice-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      margin-bottom: 22px;
+    }
+    .invoice-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .invoice-no {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+    .client-name {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      color: var(--white);
+      text-align: right;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 0.82rem;
+      color: var(--cream);
+    }
+    .meta-row span:first-child { color: var(--muted); }
+
+    .amount-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 0;
+      margin-top: 6px;
+      border-top: 1px solid rgba(201,168,76,0.15);
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      margin-bottom: 26px;
+    }
+    .amount-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .amount-value {
+      font-family: var(--serif);
+      font-size: 2rem;
+      color: var(--gold);
+    }
+
+    #payment-element {
+      margin-bottom: 24px;
+    }
+
+    .pay-btn {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: var(--gold);
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .pay-btn:hover:not(:disabled) { background: var(--gold-light); }
+    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .msg {
+      margin-top: 16px;
+      padding: 12px 14px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      border-radius: 2px;
+      display: none;
+    }
+    .msg.error { background: rgba(224,128,128,0.1); border: 1px solid rgba(224,128,128,0.3); color: #e89797; }
+    .msg.info  { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.25); color: var(--cream); }
+
+    .secure-note {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .secure-note svg { vertical-align: middle; margin-right: 6px; opacity: 0.7; }
+
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+    .footer a { color: var(--gold); text-decoration: none; }
+
+    .loading, .fatal {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--cream);
+    }
+    .fatal h2 {
+      font-family: var(--serif);
+      color: var(--gold);
+      font-weight: 400;
+      margin-bottom: 12px;
+      font-size: 1.4rem;
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 26px 20px; }
+      .amount-value { font-size: 1.6rem; }
+      .client-name { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-name">Rockwell <em>Film &amp; Photo</em></div>
+    <div class="brand-tag">Secure Payment</div>
+  </div>
+
+  <div id="loading" class="loading">Loading invoice…</div>
+
+  <div id="fatal" class="fatal" style="display:none;">
+    <h2>Invoice Not Found</h2>
+    <p>This payment link is invalid or has expired. Please contact us at (412) 292-5355.</p>
+  </div>
+
+  <div id="paid" class="fatal" style="display:none;">
+    <h2>Already Paid</h2>
+    <p>This invoice has already been paid in full. Thank you!</p>
+  </div>
+
+  <div id="checkout" class="card" style="display:none;">
+    <div class="invoice-head">
+      <div>
+        <div class="invoice-label">Invoice</div>
+        <div class="invoice-no" id="invoiceNo">—</div>
+      </div>
+      <div>
+        <div class="invoice-label" style="text-align:right;">Billed To</div>
+        <div class="client-name" id="clientName">—</div>
+      </div>
+    </div>
+
+    <div class="meta-row" id="descRow" style="display:none;"><span>For</span><span id="lineDesc">—</span></div>
+    <div class="meta-row" id="weddingRow" style="display:none;"><span>Wedding Date</span><span id="weddingDate">—</span></div>
+
+    <div class="amount-row">
+      <div class="amount-label">Amount Due</div>
+      <div class="amount-value" id="amountValue">$0.00</div>
+    </div>
+
+    <form id="payment-form">
+      <div id="payment-element"></div>
+      <button type="submit" class="pay-btn" id="payBtn" disabled>
+        <span id="payBtnText">Pay Now</span>
+      </button>
+      <div class="msg" id="msg"></div>
+    </form>
+
+    <p class="secure-note">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Secured by Stripe · Encrypted End-to-End
+    </p>
+  </div>
+
+  <div class="footer">
+    Rockwell Film &amp; Photo &nbsp;·&nbsp; (412) 292-5355 &nbsp;·&nbsp; <a href="/">rockwellfilmandphoto.com</a>
+  </div>
+
+</div>
+
+<script>
+(async function() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) return showFatal();
+
+  let invoice;
+  try {
+    const res = await fetch('/api/invoice/get?id=' + encodeURIComponent(id));
+    if (!res.ok) return showFatal();
+    invoice = await res.json();
+    if (invoice.error) return showFatal();
+  } catch {
+    return showFatal();
+  }
+
+  // Already paid?
+  if (invoice.status === 'succeeded' || invoice.status === 'processing') {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('paid').style.display = 'block';
+    return;
+  }
+
+  // Populate UI
+  document.getElementById('invoiceNo').textContent = '#' + (invoice.invoiceNo || '—');
+  document.getElementById('clientName').textContent = invoice.clientName || 'Client';
+  document.getElementById('amountValue').textContent =
+    '$' + (invoice.amount / 100).toFixed(2);
+  document.getElementById('payBtnText').textContent =
+    'Pay $' + (invoice.amount / 100).toFixed(2);
+
+  if (invoice.lineDescription) {
+    document.getElementById('descRow').style.display = 'flex';
+    document.getElementById('lineDesc').textContent = invoice.lineDescription;
+  }
+  if (invoice.weddingDate) {
+    document.getElementById('weddingRow').style.display = 'flex';
+    document.getElementById('weddingDate').textContent =
+      new Date(invoice.weddingDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('checkout').style.display = 'block';
+
+  // Set up Stripe Elements
+  const STRIPE_PK = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbIjs5mMw1Xfvq0HzmaIO47DLVf7ej2znWx8aNo100Mg1uaMd0';
+  const stripe = Stripe(STRIPE_PK);
+  const elements = stripe.elements({
+    clientSecret: invoice.clientSecret,
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#c9a84c',
+        colorBackground: '#0f0e0b',
+        colorText: '#f5f2ea',
+        colorDanger: '#e08080',
+        fontFamily: 'Montserrat, sans-serif',
+        borderRadius: '2px',
+        spacingUnit: '4px',
+      },
+      rules: {
+        '.Input': { border: '1px solid rgba(201,168,76,0.25)' },
+        '.Input:focus': { border: '1px solid #c9a84c', boxShadow: '0 0 0 1px #c9a84c' },
+        '.Label': { color: '#b8b3a4', fontSize: '12px', letterSpacing: '0.05em' },
+      },
+    },
+  });
+  const paymentElement = elements.create('payment', { layout: 'tabs' });
+  paymentElement.mount('#payment-element');
+
+  paymentElement.on('ready', () => {
+    document.getElementById('payBtn').disabled = false;
+  });
+
+  const form = document.getElementById('payment-form');
+  const payBtn = document.getElementById('payBtn');
+  const payBtnText = document.getElementById('payBtnText');
+  const msg = document.getElementById('msg');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    payBtn.disabled = true;
+    payBtnText.textContent = 'Processing…';
+    msg.style.display = 'none';
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: window.location.origin + '/payment-success.html?invoice=' + encodeURIComponent(invoice.invoiceNo || ''),
+        receipt_email: invoice.clientEmail,
+      },
+    });
+
+    if (error) {
+      msg.textContent = error.message || 'Payment failed. Please try again.';
+      msg.className = 'msg error';
+      msg.style.display = 'block';
+      payBtn.disabled = false;
+      payBtnText.textContent = 'Pay $' + (invoice.amount / 100).toFixed(2);
+    }
+    // If no error, Stripe redirects to return_url
+  });
+
+  function showFatal() {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('fatal').style.display = 'block';
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -142,7 +142,8 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
   }
 
   // Same-origin endpoint on the main Cloudflare Worker (src/index.js)
-  const WORKER_URL = '/api/invoice/create-session';
+  // Creates a Stripe PaymentIntent and returns a link to our custom /pay.html
+  const WORKER_URL = '/api/invoice/create-payment-intent';
 
   async function createPaymentLink() {
     const name = document.getElementById('clientName').value.trim();
@@ -192,7 +193,9 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
       }
 
       // Payment link generated successfully
-      const paymentUrl = data.url;
+      // New flow: data.payUrl points at our branded /pay.html
+      // Legacy flow: data.url points at checkout.stripe.com (Stripe-hosted)
+      const paymentUrl = data.payUrl || data.url;
       const emailSubject = encodeURIComponent(`Invoice ${invoiceNo} — Rockwell Film & Photo`);
       const emailBody = encodeURIComponent(
         `Hi ${name},\n\nThank you for choosing Rockwell Film & Photo!\n\nPlease use the secure link below to complete your payment of $${amount.toFixed(2)}:\n\n${paymentUrl}\n\nInvoice: ${invoiceNo}\nServices: ${description}${wedding ? '\nWedding Date: ' + new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : ''}\n\nIf you have any questions, don't hesitate to reach out!\n\nWarm regards,\nStephen Rockwell\nRockwell Film & Photo\n(412) 292-5355\nrockwellfilmandphoto.com`

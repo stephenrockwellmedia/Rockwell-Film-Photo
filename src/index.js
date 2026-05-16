@@ -22,11 +22,93 @@ export default {
     if (p === '/api/admin/photos'   && m === 'GET')  return requireAdmin(request, env, () => adminPhotos(url, env));
     if (p === '/api/admin/delete'   && m === 'POST') return requireAdmin(request, env, () => adminDelete(request, env));
 
-    if (p === '/api/invoice/create-session' && m === 'POST') return createInvoiceSession(request, env);
+    if (p === '/api/invoice/create-session'        && m === 'POST') return createInvoiceSession(request, env);
+    if (p === '/api/invoice/create-payment-intent' && m === 'POST') return createPaymentIntent(request, env);
+    if (p === '/api/invoice/get'                   && m === 'GET')  return getInvoice(url, env);
 
     return env.ASSETS.fetch(request);
   }
 };
+
+async function createPaymentIntent(request, env) {
+  try {
+    if (!env.STRIPE_SECRET_KEY) {
+      return json({ error: 'Stripe not configured on server' }, 503);
+    }
+
+    const body = await request.json();
+    const { clientName, clientEmail, amountCents, description, invoiceNo, weddingDate } = body || {};
+
+    if (!amountCents || amountCents < 50) return json({ error: 'Amount must be at least $0.50' }, 400);
+    if (!clientEmail || !clientName)     return json({ error: 'Client name and email required' }, 400);
+
+    const params = new URLSearchParams({
+      'amount': String(amountCents),
+      'currency': 'usd',
+      'receipt_email': clientEmail,
+      'description': `Invoice ${invoiceNo} — Rockwell Film & Photo`,
+      'automatic_payment_methods[enabled]': 'true',
+      'metadata[invoice_no]': invoiceNo || '',
+      'metadata[client_name]': clientName,
+      'metadata[client_email]': clientEmail,
+      'metadata[line_description]': description || 'Wedding Services',
+      'metadata[wedding_date]': weddingDate || '',
+    });
+
+    const stripeRes = await fetch('https://api.stripe.com/v1/payment_intents', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+
+    const pi = await stripeRes.json();
+    if (!stripeRes.ok) {
+      return json({ error: pi.error?.message || 'Stripe error' }, 400);
+    }
+
+    const origin = new URL(request.url).origin;
+    return json({
+      id: pi.id,
+      payUrl: `${origin}/pay.html?id=${encodeURIComponent(pi.id)}`,
+    });
+  } catch (err) {
+    return json({ error: err.message || 'create-payment-intent failed' }, 500);
+  }
+}
+
+async function getInvoice(url, env) {
+  try {
+    if (!env.STRIPE_SECRET_KEY) return json({ error: 'Stripe not configured on server' }, 503);
+
+    const id = (url.searchParams.get('id') || '').trim();
+    if (!id || !id.startsWith('pi_')) return json({ error: 'invalid id' }, 400);
+
+    const stripeRes = await fetch(`https://api.stripe.com/v1/payment_intents/${encodeURIComponent(id)}`, {
+      headers: { 'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}` },
+    });
+    const pi = await stripeRes.json();
+    if (!stripeRes.ok) return json({ error: pi.error?.message || 'not found' }, 404);
+
+    return json({
+      id: pi.id,
+      amount: pi.amount,
+      currency: pi.currency,
+      status: pi.status,
+      clientSecret: pi.client_secret,
+      description: pi.description || '',
+      clientName: pi.metadata?.client_name || '',
+      clientEmail: pi.metadata?.client_email || pi.receipt_email || '',
+      invoiceNo: pi.metadata?.invoice_no || '',
+      lineDescription: pi.metadata?.line_description || '',
+      weddingDate: pi.metadata?.wedding_date || '',
+    });
+  } catch (err) {
+    return json({ error: err.message || 'get failed' }, 500);
+  }
+}
 
 async function createInvoiceSession(request, env) {
   try {
