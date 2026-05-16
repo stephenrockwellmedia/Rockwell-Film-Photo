@@ -580,8 +580,80 @@
     { name: 'Zach & Bailey',   file: 'Zach & Bailey Reel.mp4' },
   ];
 
-  reelsData.forEach(reel => {
-    const videoUrl = `${R2}/Reels/${encodeURIComponent(reel.file)}`;
+  const buildReelUrl = (reel) => `${R2}/Reels/${encodeURIComponent(reel.file)}`;
+
+  function openReelModal(startIndex) {
+    const modal = document.getElementById('videoModal');
+    let escHandler = null;
+
+    function closeReelModal() {
+      const v = document.getElementById('reelVideo');
+      if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
+      modal.innerHTML = '';
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      if (escHandler) document.removeEventListener('keydown', escHandler);
+    }
+
+    // Build modal structure
+    modal.innerHTML = `
+      <button class="reel-close" aria-label="Close video">&times;</button>
+      <div id="reelInner">
+        <video id="reelVideo" controls autoplay playsinline></video>
+      </div>
+      <p class="reel-current-name" id="reelCurrentName"></p>
+      <div class="reel-thumbs" id="reelThumbs"></div>
+    `;
+
+    const videoEl = document.getElementById('reelVideo');
+    const thumbsEl = document.getElementById('reelThumbs');
+    const nameEl = document.getElementById('reelCurrentName');
+
+    function loadReel(i) {
+      const reel = reelsData[i];
+      videoEl.src = buildReelUrl(reel);
+      videoEl.play().catch(() => {});
+      nameEl.textContent = reel.name;
+      thumbsEl.querySelectorAll('.reel-thumb').forEach((t, idx) => {
+        t.classList.toggle('active', idx === i);
+      });
+      const active = thumbsEl.querySelector('.reel-thumb.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    reelsData.forEach((reel, i) => {
+      const url = buildReelUrl(reel);
+      const t = document.createElement('button');
+      t.className = 'reel-thumb' + (i === startIndex ? ' active' : '');
+      t.setAttribute('aria-label', `Play ${reel.name}`);
+      t.innerHTML = `
+        <video src="${url}#t=2" muted playsinline preload="metadata"></video>
+        <span class="reel-thumb-name">${reel.name}</span>
+      `;
+      t.addEventListener('click', (e) => { e.stopPropagation(); loadReel(i); });
+      thumbsEl.appendChild(t);
+    });
+
+    modal.querySelector('.reel-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeReelModal();
+    });
+
+    modal.addEventListener('click', (e) => {
+      // close when clicking the dark backdrop (not video/thumbs/close-btn)
+      if (e.target === modal) closeReelModal();
+    });
+
+    escHandler = (e) => { if (e.key === 'Escape') closeReelModal(); };
+    document.addEventListener('keydown', escHandler);
+
+    loadReel(startIndex);
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  reelsData.forEach((reel, idx) => {
+    const videoUrl = buildReelUrl(reel);
 
     const card = document.createElement('div');
     card.className = 'preview-card';
@@ -594,37 +666,7 @@
         <p class="preview-names">${reel.name}</p>
       </div>
     `;
-    card.addEventListener('click', () => {
-      const modal = document.getElementById('videoModal');
-      const closeReelModal = () => {
-        const mv = modal.querySelector('video');
-        if (mv) { mv.pause(); mv.src = ''; }
-        modal.innerHTML = '';
-        modal.classList.remove('open');
-        document.body.style.overflow = '';
-      };
-      const freshVideo = document.createElement('video');
-      freshVideo.src = videoUrl;
-      freshVideo.controls = true;
-      freshVideo.autoplay = true;
-      freshVideo.setAttribute('playsinline', '');
-      freshVideo.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;';
-      const inner = document.createElement('div');
-      inner.id = 'reelInner';
-      inner.style.cssText = 'position:relative;width:90%;max-width:500px;aspect-ratio:9/16;background:#000;';
-      inner.appendChild(freshVideo);
-      modal.innerHTML = '';
-      modal.appendChild(inner);
-      freshVideo.play().catch(() => {});
-      modal.addEventListener('click', function reelClose(e) {
-        if (!document.getElementById('reelInner').contains(e.target)) {
-          closeReelModal();
-          modal.removeEventListener('click', reelClose);
-        }
-      });
-      modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
+    card.addEventListener('click', () => openReelModal(idx));
     previewsTrack.appendChild(card);
   });
 

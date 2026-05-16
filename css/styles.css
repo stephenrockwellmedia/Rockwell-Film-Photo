@@ -640,7 +640,100 @@
     justify-content: center;
     padding: 20px;
   }
-  .modal-overlay.open { display: flex; }
+  .modal-overlay.open { display: flex; flex-direction: column; gap: 14px; }
+
+  /* ── REEL VIEWER (1-Minute Previews modal) ── */
+  #reelInner {
+    position: relative;
+    width: min(92%, 380px);
+    aspect-ratio: 9/16;
+    background: #000;
+    flex-shrink: 0;
+    margin-top: env(safe-area-inset-top);
+  }
+  #reelInner video { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
+  .reel-close {
+    position: fixed;
+    top: calc(14px + env(safe-area-inset-top));
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: var(--white, #f5f2ea);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 220;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 3px 0;
+  }
+  .reel-close:hover { background: rgba(0,0,0,0.85); }
+  .reel-current-name {
+    color: var(--gold-light, #e0c878);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    text-align: center;
+    margin: 0;
+  }
+  .reel-thumbs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 14px calc(8px + env(safe-area-inset-bottom));
+    max-width: 100%;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+  }
+  .reel-thumbs::-webkit-scrollbar { display: none; }
+  .reel-thumb {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 96px;
+    background: #111;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    scroll-snap-align: center;
+  }
+  .reel-thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .reel-thumb-name {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    font-size: 0.46rem;
+    color: white;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    padding: 8px 3px 3px;
+    text-align: center;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .reel-thumb.active {
+    border-color: var(--gold, #c9a84c);
+    transform: translateY(-2px);
+  }
+  .reel-thumb:hover { border-color: rgba(201,168,76,0.6); }
+  @media (min-width: 901px) {
+    #reelInner { width: min(50%, 420px); }
+    .reel-thumb { width: 64px; height: 110px; }
+  }
   .modal-inner {
     position: relative;
     width: 100%;
