@@ -4,3 +4,15 @@ wrangler.jsonc
 .gitignore
 .assetsignore
 README.md
+node_modules/
+.git/
+.wrangler/
+# Secrets — never publish
+*.rtf
+*.key
+*.pem
+*.env
+.env*
+*secret*
+*credentials*
+*.txt

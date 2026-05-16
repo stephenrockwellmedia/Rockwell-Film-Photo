@@ -1,0 +1,12 @@
+node_modules/
+.wrangler/
+.DS_Store
+
+# Secrets — never commit
+*.rtf
+*.key
+*.pem
+*.env
+.env*
+*secret*
+*credentials*
