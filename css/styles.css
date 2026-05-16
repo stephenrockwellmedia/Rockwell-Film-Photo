@@ -310,14 +310,18 @@
 
   .hero-tagline {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+    font-size: clamp(1.3rem, 2.5vw, 1.75rem);
     font-weight: 400;
     line-height: 1.5;
     color: var(--white);
     max-width: 720px;
     margin: -8px auto 32px;
-    padding: 0 20px;
-    text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+    padding: 18px 28px;
+    background: rgba(10,9,6,0.32);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 2px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.85);
     opacity: 0;
     animation: fadeUp 1s 1.2s forwards;
   }
