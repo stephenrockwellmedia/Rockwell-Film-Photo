@@ -664,7 +664,7 @@
     card.className = 'film-card';
     card.innerHTML = `
       ${film.thumb
-        ? `<img class="film-card-thumb" src="${film.thumb}" alt="${film.names}" />`
+        ? `<img class="film-card-thumb" src="${film.thumb}" alt="${film.names} wedding film — Pittsburgh wedding videographer Rockwell Film &amp; Photo" loading="lazy" />`
         : `<div class="thumb-placeholder">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="0.8">
               <polygon points="5,3 19,12 5,21"/>
@@ -704,11 +704,14 @@
     'Chruch_Group.webp',
     'DIPDark.webp',
   ];
-  photoFiles.forEach(file => {
+  photoFiles.forEach((file, i) => {
     const item = document.createElement('div');
     item.className = 'photo-item';
     const url = `https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/photos%20for%20website/${encodeURIComponent(file)}`;
-    item.innerHTML = `<img src="${url}" alt="Wedding photo" loading="lazy" />`;
+    // Derive a short SEO-friendly alt from the filename (strips extension + camelCase split)
+    const baseName = file.replace(/\.[a-z0-9]+$/i, '').replace(/[_-]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+    const alt = `${baseName} — wedding photography by Rockwell Film & Photo, Pittsburgh PA wedding photographer`;
+    item.innerHTML = `<img src="${url}" alt="${alt}" loading="lazy" />`;
     photoGrid.appendChild(item);
   });
 
