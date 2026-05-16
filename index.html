@@ -160,13 +160,13 @@
 <!-- ── AUTHORITY STRIP ── -->
 <section id="authority-strip">
   <div class="auth-row">
-    <div class="auth-item"><span class="auth-num">173<sup>+</sup></span><span class="auth-label">Couples</span></div>
+    <div class="auth-item"><span class="auth-num" data-target="173"><span class="auth-num-val">0</span><sup>+</sup></span><span class="auth-label">Couples</span></div>
     <div class="auth-dot"></div>
-    <div class="auth-item"><span class="auth-num">8</span><span class="auth-label">Years</span></div>
+    <div class="auth-item"><span class="auth-num" data-target="8"><span class="auth-num-val">0</span></span><span class="auth-label">Years</span></div>
     <div class="auth-dot"></div>
-    <div class="auth-item"><span class="auth-num">4</span><span class="auth-label">States</span></div>
+    <div class="auth-item"><span class="auth-num" data-target="4"><span class="auth-num-val">0</span></span><span class="auth-label">States</span></div>
     <div class="auth-dot"></div>
-    <div class="auth-item"><span class="auth-num">200K<sup>+</sup></span><span class="auth-label">Moments Captured</span></div>
+    <div class="auth-item"><span class="auth-num" data-target="200000" data-format="K"><span class="auth-num-val">0</span><sup>+</sup></span><span class="auth-label">Moments Captured</span></div>
   </div>
 </section>
 
@@ -343,13 +343,6 @@
       <div>
         <h3 class="includes-title">A Pre-Wedding Planning Call &amp; Custom Timeline</h3>
         <p class="includes-body">We map out your entire day with you, so nothing is rushed and nothing is missed.</p>
-      </div>
-    </div>
-    <div class="includes-item">
-      <span class="includes-check">✓</span>
-      <div>
-        <h3 class="includes-title">Two Professional Shooters On The Day</h3>
-        <p class="includes-body">Two angles, two perspectives — so your partner walking down the aisle and your reaction are both captured perfectly.</p>
       </div>
     </div>
     <div class="includes-item">
@@ -1101,6 +1094,45 @@ async function handleBannerSignup(e) {
   }
   window.addEventListener('resize', apply);
   window.addEventListener('load', apply);
+})();
+
+// ── Authority strip count-up ──
+(function() {
+  const row = document.querySelector('.auth-row');
+  if (!row || !('IntersectionObserver' in window)) return;
+
+  function animateNum(el) {
+    const target = +el.dataset.target;
+    const format = el.dataset.format || 'plain';
+    const valEl = el.querySelector('.auth-num-val');
+    if (!valEl || !target) return;
+    const duration = 1600;
+    const start = performance.now();
+    function frame(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const current = Math.floor(target * eased);
+      let display;
+      if (format === 'K') {
+        display = (current >= 1000 ? Math.floor(current / 1000) + 'K' : current);
+      } else {
+        display = current.toLocaleString();
+      }
+      valEl.textContent = display;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.auth-num').forEach(animateNum);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  obs.observe(row);
 })();
 </script>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
