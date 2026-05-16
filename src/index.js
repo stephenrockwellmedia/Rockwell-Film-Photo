@@ -22,9 +22,65 @@ export default {
     if (p === '/api/admin/photos'   && m === 'GET')  return requireAdmin(request, env, () => adminPhotos(url, env));
     if (p === '/api/admin/delete'   && m === 'POST') return requireAdmin(request, env, () => adminDelete(request, env));
 
+    if (p === '/api/invoice/create-session' && m === 'POST') return createInvoiceSession(request, env);
+
     return env.ASSETS.fetch(request);
   }
 };
+
+async function createInvoiceSession(request, env) {
+  try {
+    if (!env.STRIPE_SECRET_KEY) {
+      return json({ error: 'Stripe not configured on server' }, 503);
+    }
+
+    const body = await request.json();
+    const { clientName, clientEmail, amountCents, description, invoiceNo, weddingDate } = body || {};
+
+    if (!amountCents || amountCents < 50) {
+      return json({ error: 'Amount must be at least $0.50' }, 400);
+    }
+    if (!clientEmail || !clientName) {
+      return json({ error: 'Client name and email required' }, 400);
+    }
+
+    const lineDesc = weddingDate
+      ? `${description} — Wedding ${new Date(weddingDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+      : description;
+
+    const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        'mode': 'payment',
+        'payment_method_types[]': 'card',
+        'customer_email': clientEmail,
+        'line_items[0][price_data][currency]': 'usd',
+        'line_items[0][price_data][unit_amount]': String(amountCents),
+        'line_items[0][price_data][product_data][name]': lineDesc || 'Wedding Services',
+        'line_items[0][price_data][product_data][description]': `Invoice ${invoiceNo} — Rockwell Film & Photo`,
+        'line_items[0][quantity]': '1',
+        'metadata[invoice_no]': invoiceNo || '',
+        'metadata[client_name]': clientName,
+        'metadata[client_email]': clientEmail,
+        'success_url': 'https://rockwellfilmandphoto.com/payment-success.html?invoice=' + encodeURIComponent(invoiceNo || ''),
+        'cancel_url': 'https://rockwellfilmandphoto.com/invoice.html',
+      }),
+    });
+
+    const session = await stripeRes.json();
+    if (!stripeRes.ok) {
+      return json({ error: session.error?.message || 'Stripe error' }, 400);
+    }
+
+    return json({ url: session.url, sessionId: session.id });
+  } catch (err) {
+    return json({ error: err.message || 'create-session failed' }, 500);
+  }
+}
 
 async function uploadHandler(request, env) {
   try {

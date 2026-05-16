@@ -141,8 +141,8 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
     calcTotals();
   }
 
-  // Worker URL — update this after deploying your Cloudflare Worker
-  const WORKER_URL = 'https://rockwell-invoice.stephenrockwellmedia.workers.dev';
+  // Same-origin endpoint on the main Cloudflare Worker (src/index.js)
+  const WORKER_URL = '/api/invoice/create-session';
 
   async function createPaymentLink() {
     const name = document.getElementById('clientName').value.trim();

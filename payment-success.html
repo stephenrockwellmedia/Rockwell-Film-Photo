@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Received | Rockwell Film & Photo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/thank-you.css" />
+  <style>
+    .invoice-meta {
+      margin-top: 1.25rem;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      animation: fadeUp 1s ease 0.7s forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="corner corner--tl"></div>
+  <div class="corner corner--tr"></div>
+  <div class="corner corner--bl"></div>
+  <div class="corner corner--br"></div>
+
+  <div class="container">
+    <p class="brand">Rockwell Film &amp; Photo</p>
+
+    <div class="icon">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" stroke="#b89a6a" stroke-width="1"/>
+        <polyline points="20,33 28,41 44,24" stroke="#b89a6a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <h1>Payment<br/><em>received.</em></h1>
+
+    <div class="divider"></div>
+
+    <p>Thank you — your payment is confirmed. A receipt is on its way<br/>to your inbox, and we'll be in touch shortly.</p>
+
+    <p class="invoice-meta" id="invoiceMeta"></p>
+
+    <a href="/" class="back-link">Return home</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const invoice = params.get('invoice');
+    if (invoice) {
+      document.getElementById('invoiceMeta').textContent = 'Invoice ' + invoice;
+    }
+  </script>
+
+</body>
+</html>
