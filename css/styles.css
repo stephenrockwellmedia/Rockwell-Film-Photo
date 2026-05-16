@@ -248,6 +248,46 @@
 
   /* ── MOBILE STICKY CTA BAR (default hidden; shown in mobile breakpoint) ── */
   .mobile-cta-bar { display: none; }
+
+  /* ── BOOK NOW SHIMMER (gentle attention pulse every 30s) ── */
+  .hero-buttons .btn-primary,
+  .nav-cta,
+  .mobile-cta-book {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero-buttons .btn-primary::after,
+  .nav-cta::after,
+  .mobile-cta-book::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -160%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      rgba(255,255,255,0.55) 50%,
+      transparent 100%
+    );
+    transform: skewX(-22deg);
+    animation: ctaShimmer 30s ease-in-out infinite;
+    animation-delay: 6s;
+    pointer-events: none;
+    z-index: 1;
+  }
+  @keyframes ctaShimmer {
+    0%   { left: -160%; }
+    6%   { left: 160%; }
+    100% { left: 160%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-buttons .btn-primary::after,
+    .nav-cta::after,
+    .mobile-cta-book::after { animation: none; display: none; }
+  }
   .nav-burger span { display: block; width: 24px; height: 1.5px; background: var(--cream); transition: 0.3s; }
 
   /* ── HERO ── */
