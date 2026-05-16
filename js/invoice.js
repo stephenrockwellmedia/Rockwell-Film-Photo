@@ -489,4 +489,14 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
     });
 
     // Ground line
-    ctx.strok
+    ctx.strokeStyle = 'rgba(201,168,76,0.18)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - 80, 138);
+    ctx.lineTo(cx + 80, 138);
+    ctx.stroke();
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
