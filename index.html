@@ -160,7 +160,7 @@
     <p class="hero-tagline">Your wedding day will be over before you know it.<br><em>We make the films and photos that let you relive every laugh, vow, and tear — forever.</em></p>
     <div class="hero-buttons">
       <a href="#contact" class="btn-primary">Book a Date</a>
-      <a href="#films" class="btn-outline">Watch Our Films</a>
+      <a href="#films" class="btn-outline" id="watchFilmsBtn">Watch Our Films</a>
     </div>
   </div>
 </section>
@@ -1105,6 +1105,17 @@ async function handleBannerSignup(e) {
   }
   window.addEventListener('resize', apply);
   window.addEventListener('load', apply);
+})();
+
+// ── Watch Our Films: route to #previews on mobile, #films on desktop ──
+(function() {
+  const btn = document.getElementById('watchFilmsBtn');
+  if (!btn) return;
+  function setTarget() {
+    btn.setAttribute('href', window.matchMedia('(max-width: 900px)').matches ? '#previews' : '#films');
+  }
+  setTarget();
+  window.addEventListener('resize', setTarget);
 })();
 
 // ── Authority strip count-up ──
