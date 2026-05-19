@@ -192,13 +192,13 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
         return;
       }
 
-      // Payment link generated successfully
-      // New flow: data.payUrl points at our branded /pay.html
-      // Legacy flow: data.url points at checkout.stripe.com (Stripe-hosted)
-      const paymentUrl = data.payUrl || data.url;
-      const emailSubject = encodeURIComponent(`Invoice ${invoiceNo} — Rockwell Film & Photo`);
+      // Booking link generated successfully.
+      // Prefer the contract URL: couples sign first, then get auto-redirected
+      // to /pay.html.  Falls back to the direct pay URL or legacy Stripe URL.
+      const paymentUrl = data.contractUrl || data.payUrl || data.url;
+      const emailSubject = encodeURIComponent(`Your Booking & Contract — Rockwell Film & Photo (Invoice ${invoiceNo})`);
       const emailBody = encodeURIComponent(
-        `Hi ${name},\n\nThank you for choosing Rockwell Film & Photo!\n\nPlease use the secure link below to complete your payment of $${amount.toFixed(2)}:\n\n${paymentUrl}\n\nInvoice: ${invoiceNo}\nServices: ${description}${wedding ? '\nWedding Date: ' + new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : ''}\n\nIf you have any questions, don't hesitate to reach out!\n\nWarm regards,\nStephen Rockwell\nRockwell Film & Photo\n(412) 292-5355\nrockwellfilmandphoto.com`
+        `Hi ${name},\n\nThank you for choosing Rockwell Film & Photo — we're so excited to be part of your day!\n\nPlease use the secure link below to review the booking agreement, sign, and complete your payment of $${amount.toFixed(2)} to lock in your date:\n\n${paymentUrl}\n\nInvoice: ${invoiceNo}\nServices: ${description}${wedding ? '\nWedding Date: ' + new Date(wedding + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : ''}\n\nIf you have any questions, just reply or text me at (412) 292-5355.\n\nWarm regards,\nStephen Rockwell\nRockwell Film & Photo\n(412) 292-5355\nrockwellfilmandphoto.com`
       );
       const mailtoLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
       const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${emailSubject}&body=${emailBody}`;
@@ -219,7 +219,7 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
       showStatus('Error: ' + err.message, 'error');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Generate Payment Link';
+      btn.textContent = 'Generate Booking Link';
     }
   }
 

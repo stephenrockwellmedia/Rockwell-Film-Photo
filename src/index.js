@@ -73,6 +73,7 @@ async function createPaymentIntent(request, env) {
     return json({
       id: pi.id,
       payUrl: `${origin}/pay.html?id=${encodeURIComponent(pi.id)}`,
+      contractUrl: `${origin}/contract?id=${encodeURIComponent(pi.id)}`,
     });
   } catch (err) {
     return json({ error: err.message || 'create-payment-intent failed' }, 500);
