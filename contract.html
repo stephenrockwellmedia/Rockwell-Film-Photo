@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Contract | Rockwell Film & Photo</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #080807;
+      --black-2: #0f0e0b;
+      --gold: #c9a84c;
+      --gold-light: #e0c878;
+      --white: #f5f2ea;
+      --muted: #6b6555;
+      --cream: #b8b3a4;
+      --serif: 'Cormorant Garamond', serif;
+      --sans: 'Montserrat', sans-serif;
+      --danger: #e08080;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--sans);
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 40px 16px 80px;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; }
+
+    .brand { text-align: center; margin-bottom: 36px; }
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .brand-name em { font-style: italic; color: var(--gold-light); }
+    .brand-tag {
+      margin-top: 6px;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .doc-title {
+      font-family: var(--serif);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 300;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .doc-title em { font-style: italic; color: var(--gold-light); }
+    .doc-sub {
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    /* Summary card */
+    .summary {
+      background: var(--black-2);
+      border: 1px solid rgba(201,168,76,0.2);
+      padding: 24px 28px;
+      margin-bottom: 30px;
+    }
+    .summary-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 24px;
+    }
+    .summary-row .k {
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .summary-row .v {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      color: var(--white);
+    }
+    .summary-row.full { grid-column: 1 / -1; }
+    @media (max-width: 540px) {
+      .summary-grid { grid-template-columns: 1fr; gap: 12px; }
+    }
+
+    /* Venue field */
+    .venue-block {
+      background: rgba(201,168,76,0.05);
+      border: 1px solid rgba(201,168,76,0.18);
+      padding: 20px 22px;
+      margin-bottom: 32px;
+    }
+    .venue-block label {
+      display: block;
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .venue-block input {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid rgba(201,168,76,0.25);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 0.92rem;
+      padding: 12px 14px;
+      outline: none;
+    }
+    .venue-block input:focus { border-color: var(--gold); }
+    .venue-block input::placeholder { color: var(--muted); }
+
+    /* Contract body */
+    .contract-body {
+      background: var(--black-2);
+      border: 1px solid rgba(201,168,76,0.12);
+      padding: 36px 32px;
+      margin-bottom: 32px;
+      max-height: 60vh;
+      overflow-y: auto;
+      scrollbar-color: var(--gold) var(--black-2);
+    }
+    .contract-body::-webkit-scrollbar { width: 8px; }
+    .contract-body::-webkit-scrollbar-track { background: var(--black-2); }
+    .contract-body::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.4); border-radius: 4px; }
+
+    .clause { margin-bottom: 22px; }
+    .clause:last-child { margin-bottom: 0; }
+    .clause h3 {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .clause p {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--cream);
+    }
+    .clause strong { color: var(--white); font-weight: 500; }
+
+    /* Signature section */
+    .sign-block {
+      background: var(--black-2);
+      border-left: 3px solid var(--gold);
+      padding: 28px 32px;
+      margin-bottom: 28px;
+    }
+    .sign-block h3 {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+    .sign-block .sign-intro {
+      font-size: 0.88rem;
+      color: var(--cream);
+      margin-bottom: 22px;
+      line-height: 1.65;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--white);
+    }
+    .check-row input[type="checkbox"] {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+    .sign-fields {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      margin-top: 22px;
+    }
+    .sign-fields label {
+      display: block;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .sign-fields input {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid rgba(201,168,76,0.25);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      padding: 12px 14px;
+      outline: none;
+      color-scheme: dark;
+    }
+    .sign-fields input[type="text"] {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--gold-light);
+    }
+    .sign-fields input:focus { border-color: var(--gold); }
+    @media (max-width: 540px) {
+      .sign-fields { grid-template-columns: 1fr; }
+    }
+
+    /* Submit */
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 20px;
+      background: var(--gold);
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .submit-btn:hover:not(:disabled) { background: var(--gold-light); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .msg {
+      margin-top: 16px;
+      padding: 14px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      border-radius: 2px;
+      display: none;
+    }
+    .msg.error { background: rgba(224,128,128,0.1); border: 1px solid rgba(224,128,128,0.3); color: #e89797; }
+    .msg.info  { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.25); color: var(--cream); }
+
+    .secure-note {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .loading, .fatal {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--cream);
+    }
+    .fatal h2 {
+      font-family: var(--serif);
+      color: var(--gold);
+      font-weight: 400;
+      margin-bottom: 12px;
+      font-size: 1.5rem;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-name">Rockwell <em>Film &amp; Photo</em></div>
+    <div class="brand-tag">Booking Agreement</div>
+  </div>
+
+  <div id="loading" class="loading">Loading your booking…</div>
+
+  <div id="fatal" class="fatal" style="display:none;">
+    <h2>Booking Not Found</h2>
+    <p>This contract link is invalid or has expired. Please reach out at (412) 292-5355.</p>
+  </div>
+
+  <div id="content" style="display:none;">
+
+    <h1 class="doc-title">Wedding Services <em>Agreement</em></h1>
+    <p class="doc-sub">Please review &amp; sign · then proceed to payment</p>
+
+    <!-- Summary of booking pulled from invoice -->
+    <div class="summary">
+      <div class="summary-label">Your Booking</div>
+      <div class="summary-grid">
+        <div class="summary-row"><div class="k">Invoice</div><div class="v" id="s-invoice">—</div></div>
+        <div class="summary-row"><div class="k">Total Amount</div><div class="v" id="s-amount">—</div></div>
+        <div class="summary-row"><div class="k">Client</div><div class="v" id="s-client">—</div></div>
+        <div class="summary-row"><div class="k">Wedding Date</div><div class="v" id="s-wedding">—</div></div>
+        <div class="summary-row full"><div class="k">Services</div><div class="v" id="s-services">—</div></div>
+      </div>
+    </div>
+
+    <form id="contract-form">
+      <div class="venue-block">
+        <label for="venue">Wedding Venue / Location <span style="color:var(--muted);font-weight:400;letter-spacing:0.05em;text-transform:none;">(write "TBD" if not yet booked)</span></label>
+        <input type="text" id="venue" name="venue" placeholder="e.g. Pittsburgh Botanic Garden, Pittsburgh PA" required />
+      </div>
+
+      <div class="contract-body" id="contract-body">
+        <!-- Contract clauses injected by JS so dynamic fields fill in -->
+      </div>
+
+      <div class="sign-block">
+        <h3>Your Signature</h3>
+        <p class="sign-intro">By typing your full legal name and today's date below, you are electronically signing this agreement. This carries the same legal weight as a written signature.</p>
+
+        <label class="check-row">
+          <input type="checkbox" id="agree1" required>
+          <span>I have read and agree to all the terms above.</span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="agree2" required>
+          <span>I am the person named on the invoice and I have the authority to sign this agreement.</span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="agree3" required>
+          <span>I understand the deposit is non-refundable and reserves my wedding date.</span>
+        </label>
+
+        <div class="sign-fields">
+          <div>
+            <label for="signature">Type your full legal name to sign</label>
+            <input type="text" id="signature" name="signature" placeholder="e.g. Sarah Marie Miller" autocomplete="name" required />
+          </div>
+          <div>
+            <label for="signDate">Today's Date</label>
+            <input type="date" id="signDate" name="signDate" required />
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        Agree &amp; Continue to Payment
+      </button>
+      <div class="msg" id="msg"></div>
+
+      <p class="secure-note">Your signed contract will be emailed to Rockwell Film &amp; Photo for our records.</p>
+    </form>
+  </div>
+
+  <div class="footer">
+    Rockwell Film &amp; Photo &nbsp;·&nbsp; Stephen Jackson (DBA) &nbsp;·&nbsp; (412) 292-5355 &nbsp;·&nbsp; <a href="/" style="color:var(--gold);text-decoration:none;">rockwellfilmandphoto.com</a>
+  </div>
+
+</div>
+
+<script>
+(async function() {
+
+  // --- CONFIG ---------------------------------------------------------
+  // Same Formspree endpoint as the banner signup.  When Stephen wants a
+  // dedicated inbox for signed contracts he can create a second Formspree
+  // form and swap this URL.
+  const FORMSPREE_URL = 'https://formspree.io/f/xdabarjg';
+  const CONTRACT_VERSION = '2026-05-19';
+  // --------------------------------------------------------------------
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) return showFatal();
+
+  // Pull invoice details
+  let invoice;
+  try {
+    const res = await fetch('/api/invoice/get?id=' + encodeURIComponent(id));
+    if (!res.ok) return showFatal();
+    invoice = await res.json();
+    if (invoice.error) return showFatal();
+  } catch {
+    return showFatal();
+  }
+
+  // Already paid?  Don't make them re-sign — send them to /pay.html which
+  // will show the "Already Paid" panel.
+  if (invoice.status === 'succeeded' || invoice.status === 'processing') {
+    window.location.href = '/pay.html?id=' + encodeURIComponent(id);
+    return;
+  }
+
+  // Populate summary
+  const amtFmt = '$' + (invoice.amount / 100).toFixed(2);
+  document.getElementById('s-invoice').textContent  = '#' + (invoice.invoiceNo || '—');
+  document.getElementById('s-amount').textContent   = amtFmt;
+  document.getElementById('s-client').textContent   = invoice.clientName || '—';
+  document.getElementById('s-services').textContent = invoice.lineDescription || '—';
+  document.getElementById('s-wedding').textContent  = invoice.weddingDate
+    ? new Date(invoice.weddingDate + 'T12:00:00')
+        .toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : 'To be confirmed';
+
+  // Today's date prefilled (read-only-ish; we still allow tweak if needed)
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('signDate').value = today;
+  document.getElementById('signDate').max = today;
+
+  // Render the contract body with personalized variables.  Stored verbatim
+  // in the submission so we keep a copy of what was signed.
+  const weddingDisplay = invoice.weddingDate
+    ? new Date(invoice.weddingDate + 'T12:00:00')
+        .toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : 'a date to be confirmed in writing';
+
+  const clauses = [
+    {
+      h: 'Parties',
+      p: `This Wedding Services Agreement ("Agreement") is entered into between <strong>Stephen Jackson, doing business as Rockwell Film &amp; Photo</strong> ("Rockwell") and <strong>${escapeHtml(invoice.clientName || 'the undersigned client')}</strong> ("Client"). Together, the "Parties."`
+    },
+    {
+      h: '1. Services',
+      p: `Rockwell agrees to provide the wedding photography and/or videography services described on Invoice <strong>${escapeHtml(invoice.invoiceNo || '—')}</strong>: <em>${escapeHtml(invoice.lineDescription || 'wedding services')}</em>, on <strong>${escapeHtml(weddingDisplay)}</strong>. The venue/location is as specified by Client above.`
+    },
+    {
+      h: '2. Total &amp; Payment Schedule',
+      p: `The total fee for these services is <strong>${amtFmt}</strong>. The amount due at signing reserves Rockwell's calendar for the wedding date. Any remaining balance is due no later than <strong>fourteen (14) days</strong> before the wedding date. Failure to pay the balance on time may result in cancellation of services with no refund of deposit.`
+    },
+    {
+      h: '3. Deposit Non-Refundable',
+      p: `The deposit reserves Rockwell's calendar for the wedding date and is <strong>non-refundable</strong>. Upon receipt of the deposit, Rockwell will turn away other inquiries for that date.`
+    },
+    {
+      h: '4. Cancellation by Client',
+      p: `If Client cancels for any reason, the deposit is retained by Rockwell. If cancellation occurs within <strong>thirty (30) days</strong> of the wedding date, the full remaining balance is due regardless of the reason for cancellation.`
+    },
+    {
+      h: '5. Rockwell\'s Inability to Perform',
+      p: `If Rockwell is unable to perform due to illness, injury, equipment failure, or other circumstances beyond Rockwell's reasonable control, Rockwell will (a) make best efforts to send a qualified replacement of equivalent skill at no additional cost to Client, or (b) refund all amounts paid by Client. In no event will Rockwell's liability exceed the total amount Client has paid under this Agreement.`
+    },
+    {
+      h: '6. Force Majeure',
+      p: `Neither Party is liable for failure to perform under this Agreement caused by acts of God, severe weather, government order, public-health emergency, war, terrorism, or other events beyond reasonable control. In such cases the Parties will work in good faith to reschedule the services for a mutually-agreeable date.`
+    },
+    {
+      h: '7. Copyright &amp; Use License',
+      p: `Rockwell retains all copyright and ownership in the photographs, video footage, and edited deliverables produced under this Agreement. Client receives a perpetual, royalty-free, personal-use license to share, print, and post the delivered images and films for non-commercial purposes. Resale, sublicensing, or commercial use by Client requires Rockwell's written permission.`
+    },
+    {
+      h: '8. Portfolio &amp; Marketing Rights',
+      p: `Client grants Rockwell the perpetual, irrevocable right to use any photographs and films from the wedding in Rockwell's portfolio, website, social-media accounts, advertising, contest entries, and submissions to wedding publications and blogs, in any media now known or later developed, without further compensation to Client.`
+    },
+    {
+      h: '9. Delivery',
+      p: `The edited highlight film and photo gallery will be delivered to Client within <strong>six to eight (6–8) weeks</strong> of the wedding date. Rush delivery is available for an additional fee. Raw or unedited footage is the property of Rockwell and is not delivered to Client.`
+    },
+    {
+      h: '10. Creative Control',
+      p: `Client may submit a shot list at the pre-wedding planning call. Rockwell will use best efforts to capture requested moments but does not guarantee specific shots due to factors outside Rockwell's control (lighting conditions, guest interference, schedule changes, weather, etc.). Editing style, music selection, color grading, and final cut are Rockwell's artistic decisions.`
+    },
+    {
+      h: '11. Limit of Liability',
+      p: `<strong>To the maximum extent permitted by law, Rockwell's total liability under this Agreement, for any cause whatsoever (including negligence), is limited to the total amount Client has paid Rockwell.</strong> In no event is Rockwell liable for incidental, consequential, or punitive damages.`
+    },
+    {
+      h: '12. Independent Contractor',
+      p: `Rockwell is an independent contractor and not an employee, partner, or joint-venturer of Client. Rockwell may use assistants, second shooters, and equipment of Rockwell's choosing.`
+    },
+    {
+      h: '13. Governing Law',
+      p: `This Agreement is governed by and construed under the laws of the <strong>Commonwealth of Pennsylvania</strong>, without regard to its conflict-of-law provisions.`
+    },
+    {
+      h: '14. Entire Agreement',
+      p: `This document constitutes the entire agreement between the Parties regarding its subject matter and supersedes any prior oral or written understanding. Any amendment must be in writing and signed by both Parties. If any provision is held unenforceable, the remaining provisions remain in full force.`
+    }
+  ];
+
+  const body = document.getElementById('contract-body');
+  body.innerHTML = clauses.map(c => `
+    <div class="clause">
+      <h3>${c.h}</h3>
+      <p>${c.p}</p>
+    </div>
+  `).join('');
+
+  // Reveal content
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+
+  // --- Submit ---------------------------------------------------------
+  const form = document.getElementById('contract-form');
+  const submitBtn = document.getElementById('submitBtn');
+  const msg = document.getElementById('msg');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.style.display = 'none';
+
+    const venue = document.getElementById('venue').value.trim();
+    const signature = document.getElementById('signature').value.trim();
+    const signDate = document.getElementById('signDate').value;
+
+    if (!venue || !signature || !signDate) {
+      showMsg('Please fill out venue, signature, and date.', 'error');
+      return;
+    }
+
+    if (signature.split(/\s+/).filter(Boolean).length < 2) {
+      showMsg('Please type your full legal name (first and last).', 'error');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    // Re-serialize the contract for the record
+    const contractText = clauses.map(c =>
+      stripTags(c.h) + '\n' + stripTags(c.p)
+    ).join('\n\n');
+
+    const payload = {
+      _subject: `Signed contract: ${invoice.clientName || invoice.invoiceNo} — ${invoice.invoiceNo}`,
+      contract_version: CONTRACT_VERSION,
+      invoice_no: invoice.invoiceNo || '',
+      invoice_pi_id: invoice.id,
+      client_name: invoice.clientName || '',
+      client_email: invoice.clientEmail || '',
+      total_amount: amtFmt,
+      services: invoice.lineDescription || '',
+      wedding_date: invoice.weddingDate || '',
+      wedding_date_display: weddingDisplay,
+      venue: venue,
+      typed_signature: signature,
+      signed_on: signDate,
+      timestamp_iso: new Date().toISOString(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      user_agent: navigator.userAgent,
+      page_url: window.location.href,
+      agreed_terms_full_text: contractText,
+    };
+
+    try {
+      const res = await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Submission failed');
+
+      showMsg('Thank you — contract signed. Redirecting you to payment…', 'info');
+      setTimeout(() => {
+        window.location.href = '/pay.html?id=' + encodeURIComponent(id);
+      }, 1500);
+
+    } catch (err) {
+      showMsg('Something went wrong submitting your signature. Please try again, or contact us at (412) 292-5355.', 'error');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Agree & Continue to Payment';
+    }
+  });
+
+  // --- Helpers --------------------------------------------------------
+  function showFatal() {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('fatal').style.display = 'block';
+  }
+  function showMsg(text, type) {
+    msg.textContent = text;
+    msg.className = 'msg ' + type;
+    msg.style.display = 'block';
+  }
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+  function stripTags(s) {
+    const div = document.createElement('div');
+    div.innerHTML = s;
+    return div.textContent || '';
+  }
+})();
+</script>
+
+</body>
+</html>
