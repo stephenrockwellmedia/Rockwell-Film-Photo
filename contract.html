@@ -71,33 +71,39 @@
     /* Summary card */
     .summary {
       background: var(--black-2);
-      border: 1px solid rgba(201,168,76,0.2);
-      padding: 24px 28px;
+      border: 1px solid rgba(201,168,76,0.25);
+      padding: 32px 34px;
       margin-bottom: 30px;
     }
     .summary-label {
-      font-size: 0.58rem;
-      letter-spacing: 0.3em;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 14px;
+      color: var(--gold);
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
     }
     .summary-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px 24px;
+      gap: 22px 32px;
     }
     .summary-row .k {
-      font-size: 0.58rem;
-      letter-spacing: 0.18em;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 2px;
+      color: var(--gold-light);
+      margin-bottom: 6px;
     }
     .summary-row .v {
       font-family: var(--serif);
-      font-size: 1.05rem;
+      font-size: 1.4rem;
+      font-weight: 400;
       color: var(--white);
+      line-height: 1.3;
     }
     .summary-row.full { grid-column: 1 / -1; }
     @media (max-width: 540px) {
