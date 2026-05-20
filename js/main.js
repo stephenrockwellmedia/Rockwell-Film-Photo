@@ -574,10 +574,10 @@
   const reelsData = [
     { name: 'Corry & Caitlyn', file: 'Corry and Cat Reel.mp4' },
     { name: 'Julia & Sam',     file: 'Julia and Sam Short.mp4' },
+    { name: 'Zach & Bailey',   file: 'Zach & Bailey Reel.mp4' },
     { name: 'Matt & Kayla',    file: 'Matt and Kayla-.mp4' },
     { name: 'Paige & Frank',   file: 'Pagie and Frank Short.mp4' },
     { name: 'Preview Reel',    file: 'Preview wedding Reel.mp4' },
-    { name: 'Zach & Bailey',   file: 'Zach & Bailey Reel.mp4' },
   ];
 
   const buildReelUrl = (reel) => `${R2}/Reels/${encodeURIComponent(reel.file)}`;
