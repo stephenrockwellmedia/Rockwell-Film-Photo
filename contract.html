@@ -608,10 +608,30 @@
         });
       } catch { /* non-fatal — Formspree record is the legal record */ }
 
-      showMsg('Thank you — contract signed. Redirecting you to payment…', 'info');
+      const payUrl = '/pay.html?id=' + encodeURIComponent(id);
+
+      // Swap the submit button into a real anchor so couples can always
+      // click through to payment even if the auto-redirect fails (bfcache,
+      // popup blockers, slow network, etc.)
+      const link = document.createElement('a');
+      link.href = payUrl;
+      link.className = 'submit-btn';
+      link.textContent = 'Continue to Payment →';
+      link.style.textDecoration = 'none';
+      submitBtn.replaceWith(link);
+
+      showMsg('Thank you — contract signed. Taking you to payment…', 'info');
+
+      // Try the auto-redirect.  Use assign() so it shows up in history
+      // and survives bfcache restores better than href.
       setTimeout(() => {
-        window.location.href = '/pay.html?id=' + encodeURIComponent(id);
-      }, 1500);
+        try { window.location.assign(payUrl); } catch { /* user can click the button */ }
+      }, 900);
+
+      // If the page is restored from bfcache, kick the redirect again
+      window.addEventListener('pageshow', (ev) => {
+        if (ev.persisted) window.location.assign(payUrl);
+      });
 
     } catch (err) {
       showMsg('Something went wrong submitting your signature. Please try again, or contact us at (412) 292-5355.', 'error');
