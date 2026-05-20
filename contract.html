@@ -412,9 +412,14 @@
     return showFatal();
   }
 
-  // Already paid?  Don't make them re-sign — send them to /pay.html which
-  // will show the "Already Paid" panel.
+  // Already paid?  Skip to the pay page (it'll show "Already Paid").
   if (invoice.status === 'succeeded' || invoice.status === 'processing') {
+    window.location.href = '/pay.html?id=' + encodeURIComponent(id);
+    return;
+  }
+
+  // Already signed?  Don't make them re-sign — send them straight to pay.
+  if (invoice.contractSigned) {
     window.location.href = '/pay.html?id=' + encodeURIComponent(id);
     return;
   }
@@ -570,7 +575,8 @@
     };
 
     try {
-      const res = await fetch(FORMSPREE_URL, {
+      // 1. Email a copy of the signed contract to Rockwell via Formspree
+      const fsRes = await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -578,7 +584,23 @@
         },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error('Submission failed');
+      if (!fsRes.ok) throw new Error('Formspree submission failed');
+
+      // 2. Mark the Stripe PaymentIntent as signed so couples don't need
+      //    to sign again if they come back to the link later.
+      try {
+        await fetch('/api/invoice/mark-signed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id,
+            signedBy: signature,
+            signedAt: new Date().toISOString(),
+            venue,
+            contractVersion: CONTRACT_VERSION,
+          }),
+        });
+      } catch { /* non-fatal — Formspree record is the legal record */ }
 
       showMsg('Thank you — contract signed. Redirecting you to payment…', 'info');
       setTimeout(() => {

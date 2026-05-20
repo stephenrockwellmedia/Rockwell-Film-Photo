@@ -25,6 +25,7 @@ export default {
     if (p === '/api/invoice/create-session'        && m === 'POST') return createInvoiceSession(request, env);
     if (p === '/api/invoice/create-payment-intent' && m === 'POST') return createPaymentIntent(request, env);
     if (p === '/api/invoice/get'                   && m === 'GET')  return getInvoice(url, env);
+    if (p === '/api/invoice/mark-signed'           && m === 'POST') return markSigned(request, env);
 
     return env.ASSETS.fetch(request);
   }
@@ -105,9 +106,51 @@ async function getInvoice(url, env) {
       invoiceNo: pi.metadata?.invoice_no || '',
       lineDescription: pi.metadata?.line_description || '',
       weddingDate: pi.metadata?.wedding_date || '',
+      contractSigned: pi.metadata?.contract_signed === 'true',
+      contractSignedBy: pi.metadata?.contract_signed_by || '',
+      contractSignedAt: pi.metadata?.contract_signed_at || '',
+      contractVenue: pi.metadata?.contract_venue || '',
     });
   } catch (err) {
     return json({ error: err.message || 'get failed' }, 500);
+  }
+}
+
+async function markSigned(request, env) {
+  try {
+    if (!env.STRIPE_SECRET_KEY) return json({ error: 'Stripe not configured on server' }, 503);
+
+    const body = await request.json();
+    const { id, signedBy, signedAt, venue, contractVersion } = body || {};
+    if (!id || !id.startsWith('pi_')) return json({ error: 'invalid id' }, 400);
+    if (!signedBy || typeof signedBy !== 'string')   return json({ error: 'missing signedBy' }, 400);
+
+    // Stripe metadata values must be strings and <= 500 chars each.
+    const cap = (s) => String(s || '').slice(0, 480);
+
+    const params = new URLSearchParams({
+      'metadata[contract_signed]': 'true',
+      'metadata[contract_signed_by]': cap(signedBy),
+      'metadata[contract_signed_at]': cap(signedAt || new Date().toISOString()),
+      'metadata[contract_venue]': cap(venue),
+      'metadata[contract_version]': cap(contractVersion),
+    });
+
+    const stripeRes = await fetch(`https://api.stripe.com/v1/payment_intents/${encodeURIComponent(id)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+
+    const pi = await stripeRes.json();
+    if (!stripeRes.ok) return json({ error: pi.error?.message || 'mark-signed failed' }, 400);
+
+    return json({ ok: true, contractSigned: pi.metadata?.contract_signed === 'true' });
+  } catch (err) {
+    return json({ error: err.message || 'mark-signed failed' }, 500);
   }
 }
 
