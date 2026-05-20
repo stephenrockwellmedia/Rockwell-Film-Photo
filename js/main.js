@@ -582,6 +582,10 @@
 
   const buildReelUrl = (reel) => `${R2}/Reels/${encodeURIComponent(reel.file)}`;
 
+  // Original film-modal HTML stashed once on page load so we can put it
+  // back when the reel modal closes (otherwise openModal() breaks).
+  const FILM_MODAL_HTML = document.getElementById('videoModal').innerHTML;
+
   function openReelModal(startIndex) {
     const modal = document.getElementById('videoModal');
     let escHandler = null;
@@ -589,7 +593,9 @@
     function closeReelModal() {
       const v = document.getElementById('reelVideo');
       if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
-      modal.innerHTML = '';
+      // Restore the original film-modal markup so the YouTube/Vimeo iframe
+      // path (openModal) still works after using the reel viewer.
+      modal.innerHTML = FILM_MODAL_HTML;
       modal.classList.remove('open');
       document.body.style.overflow = '';
       if (escHandler) document.removeEventListener('keydown', escHandler);
@@ -599,7 +605,7 @@
     modal.innerHTML = `
       <button class="reel-close" aria-label="Close video">&times;</button>
       <div id="reelInner">
-        <video id="reelVideo" controls autoplay playsinline></video>
+        <video id="reelVideo" controls autoplay playsinline preload="auto"></video>
       </div>
       <p class="reel-current-name" id="reelCurrentName"></p>
       <div class="reel-thumbs" id="reelThumbs"></div>
@@ -612,7 +618,8 @@
     function loadReel(i) {
       const reel = reelsData[i];
       videoEl.src = buildReelUrl(reel);
-      videoEl.play().catch(() => {});
+      videoEl.load();             // force the buffering pipeline to start
+      videoEl.play().catch(() => {}); // play if browser allows
       nameEl.textContent = reel.name;
       thumbsEl.querySelectorAll('.reel-thumb').forEach((t, idx) => {
         t.classList.toggle('active', idx === i);
@@ -647,9 +654,11 @@
     escHandler = (e) => { if (e.key === 'Escape') closeReelModal(); };
     document.addEventListener('keydown', escHandler);
 
-    loadReel(startIndex);
+    // Open the modal FIRST so the video element is visible/laid-out before
+    // play() is called.  iOS Safari rejects play() on display:none videos.
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => { loadReel(startIndex); });
   }
 
   reelsData.forEach((reel, idx) => {
