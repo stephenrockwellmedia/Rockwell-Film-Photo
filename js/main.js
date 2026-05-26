@@ -746,7 +746,7 @@
     'photos for website_DSC05315_d51xwl.webp',
     'photos for website_DSC06304_rtdflj.webp',
     'photos for website_Screenshot_2025-10-13_at_1.14.07_AM_r5abks.webp',
-    'photos for website_Screenshot_2026-03-07_at_11.57.29_AM_gigerq.webp',
+
     'photos for website_Screenshot_2026-03-07_at_11.57.45_AM_i6ntby.webp',
     'photos for website_Screenshot_2026-03-07_at_11.57.58_AM_rot0na.webp',
     'photos for website_Screenshot_2026-03-07_at_11.58.17_AM_fclqwh.webp',
