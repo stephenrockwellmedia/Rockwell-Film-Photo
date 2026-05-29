@@ -900,14 +900,25 @@
     // Helper: scroll to element with nav offset, waiting for layout to settle
     function scrollToSection(el) {
       if (!el) return;
-      // Wait two animation frames so any layout shifts (lazy images, fonts) settle
-      requestAnimationFrame(() => {
+      const isMobile = window.innerWidth <= 900;
+      const doScroll = () => {
         requestAnimationFrame(() => {
-          const navHeight = 88;
-          const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight;
-          window.scrollTo({ top, behavior: 'smooth' });
+          requestAnimationFrame(() => {
+            const nav = document.getElementById('navbar');
+            const banner = document.getElementById('promoBanner');
+            const bannerH = (banner && banner.style.display !== 'none') ? banner.offsetHeight : 0;
+            const navOffset = (nav ? nav.offsetHeight : 0) + bannerH + 8;
+            const top = el.getBoundingClientRect().top + window.pageYOffset - navOffset;
+            window.scrollTo({ top, behavior: 'smooth' });
+          });
         });
-      });
+      };
+      // On mobile, wait for the menu close animation (320ms) before scrolling
+      if (isMobile) {
+        setTimeout(doScroll, 350);
+      } else {
+        doScroll();
+      }
     }
     
     if (path && validSections.includes(path)) {
