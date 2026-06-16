@@ -172,6 +172,9 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
       const amountCents = Math.round(amount * 100);
 
       // Call Cloudflare Worker to create Stripe Checkout session
+      const fullTotalCents = Math.round(getTotal() * 100);
+      const isDeposit = document.getElementById('depositToggle').checked && amountCents < fullTotalCents;
+
       const res = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -179,6 +182,8 @@ const STRIPE_KEY = 'pk_live_51TF4TRL3KWfY91IGePCC3ktriGszwAc66EGbsJ1zh6VvIJU4pbI
           clientName: name,
           clientEmail: email,
           amountCents,
+          fullTotalCents,
+          isDeposit,
           description,
           invoiceNo,
           weddingDate: wedding,
