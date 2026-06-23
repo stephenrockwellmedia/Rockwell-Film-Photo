@@ -2306,3 +2306,116 @@
       #memory-wall > div > div:first-child { display:none; }
       #memory-wall > div { grid-template-columns:1fr !important; }
     }
+
+  /* ── FREE ENGAGEMENT SESSION POPUP ── */
+  .offer-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(8,7,5,0.86);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+  }
+  .offer-popup.open { opacity: 1; visibility: visible; }
+  .offer-popup-card {
+    position: relative;
+    max-width: 460px;
+    width: 100%;
+    background: linear-gradient(160deg, var(--warm-dark) 0%, var(--black) 100%);
+    border: 1px solid rgba(201,168,76,0.45);
+    border-radius: 4px;
+    padding: 44px 38px 34px;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    transform: translateY(16px) scale(0.98);
+    transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  }
+  .offer-popup.open .offer-popup-card { transform: translateY(0) scale(1); }
+  .offer-popup-eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+  .offer-popup-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 1.9rem;
+    line-height: 1.2;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .offer-popup-title em { color: var(--gold-light); font-style: italic; }
+  .offer-popup-sub {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .offer-popup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .offer-popup-input {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    color: var(--cream);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 2px;
+    padding: 14px 16px;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .offer-popup-input::placeholder { color: var(--muted); }
+  .offer-popup-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.08); }
+  .offer-popup-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    border: none;
+    border-radius: 2px;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .offer-popup-btn:hover { background: var(--gold-light); }
+  .offer-popup-decline {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    background: none;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .offer-popup-decline:hover { color: var(--cream); }
+
+  @media (max-width: 600px) {
+    .offer-popup-card { padding: 38px 24px 28px; }
+    .offer-popup-title { font-size: 1.6rem; }
+    .offer-popup-sub { font-size: 0.78rem; }
+  }

@@ -245,6 +245,20 @@
   </div>
 </div>
 
+<!-- ── FREE ENGAGEMENT SESSION POPUP ── -->
+<div class="offer-popup" id="offerPopup" role="dialog" aria-modal="true" aria-labelledby="offerPopupTitle">
+  <div class="offer-popup-card">
+    <div class="offer-popup-eyebrow">Limited Time Offer</div>
+    <h2 class="offer-popup-title" id="offerPopupTitle">Book a Wedding With Us &amp; Get a <em>Free</em> Engagement Session</h2>
+    <p class="offer-popup-sub">A complimentary engagement shoot ($450 value) — yours free when you book your wedding with Rockwell Film &amp; Photo.</p>
+    <form class="offer-popup-form" id="offerPopupForm" onsubmit="handleOfferSignup(event)">
+      <input type="email" class="offer-popup-input" placeholder="Your email address" required aria-label="Email address" />
+      <button type="submit" class="offer-popup-btn">Claim My Free Session</button>
+    </form>
+    <button type="button" class="offer-popup-decline" onclick="declineOffer()">No, I don't want a free engagement session</button>
+  </div>
+</div>
+
 <!-- ── PHOTOS ── -->
 <section id="photos">
   <div class="photos-header">
@@ -1121,6 +1135,58 @@ async function handleBannerSignup(e) {
     btn.disabled = false;
   }
 }
+
+// ── Free Engagement Session popup ──
+// Submits to the same Formspree inbox as the memory-wall email signups.
+async function handleOfferSignup(e) {
+  e.preventDefault();
+  const form = document.getElementById('offerPopupForm');
+  const email = form.querySelector('input[type="email"]').value;
+  const btn = form.querySelector('button[type="submit"]');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://formspree.io/f/xdabarjg', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email, offer: 'Free Engagement Session — wedding booking' })
+    });
+    if (res.ok) {
+      form.innerHTML = '<span style="font-size:0.8rem;font-weight:600;letter-spacing:0.1em;color:var(--gold-light);">✓ You’re in! We’ll be in touch about your free engagement session.</span>';
+      try { localStorage.setItem('offerPopupDone', '1'); } catch(e){}
+      setTimeout(closeOfferPopup, 3500);
+    } else {
+      btn.textContent = 'Try Again';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    btn.textContent = 'Try Again';
+    btn.disabled = false;
+  }
+}
+function closeOfferPopup() {
+  document.getElementById('offerPopup').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function declineOffer() {
+  try { localStorage.setItem('offerPopupDone', '1'); } catch(e){}
+  closeOfferPopup();
+}
+(function initOfferPopup() {
+  let shown = false;
+  try { if (localStorage.getItem('offerPopupDone')) return; } catch(e){}
+  const open = () => {
+    if (shown) return;
+    shown = true;
+    document.getElementById('offerPopup').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  // Show after 12s on the page, or when the visitor scrolls past the hero.
+  setTimeout(open, 12000);
+  window.addEventListener('scroll', function onScroll() {
+    if (window.scrollY > window.innerHeight * 1.2) { open(); window.removeEventListener('scroll', onScroll); }
+  }, { passive: true });
+})();
 
 // Keep --banner-h in sync with the actual rendered banner height so the
 // fixed nav and the hero padding always clear it, no matter how the
