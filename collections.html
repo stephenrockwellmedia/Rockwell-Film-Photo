@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rockwell Film &amp; Photo — Wedding Collections</title>
+<style>
+  :root {
+    --paper:      #F7F3EA;
+    --paper-2:    #FBF8F1;
+    --ink:        #2A2018;
+    --ink-soft:   #6B5E4F;
+    --gold:       #A9843F;
+    --gold-deep:  #8A6B31;
+    --line:       #E2D8C4;
+    --card:       #FFFFFF;
+    --shadow:     0 1px 2px rgba(42,32,24,.05), 0 12px 36px rgba(42,32,24,.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #17130E;
+      --paper-2:   #1E1811;
+      --ink:       #F1E9DA;
+      --ink-soft:  #A99C86;
+      --gold:      #CBA35C;
+      --gold-deep: #B98F45;
+      --line:      #33291C;
+      --card:      #1F1912;
+      --shadow:    0 1px 2px rgba(0,0,0,.4), 0 18px 44px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #17130E;
+    --paper-2:   #1E1811;
+    --ink:       #F1E9DA;
+    --ink-soft:  #A99C86;
+    --gold:      #CBA35C;
+    --gold-deep: #B98F45;
+    --line:      #33291C;
+    --card:      #1F1912;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 18px 44px rgba(0,0,0,.45);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .display {
+    font-family: "Hoefler Text", "Baskerville", "Baskerville Old Face", "Didot", "Garamond", Georgia, serif;
+  }
+  .label {
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .22em;
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--gold-deep);
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: clamp(2.4rem, 6vw, 5rem) clamp(1.2rem, 5vw, 2.5rem) 4rem;
+  }
+
+  /* ---- Masthead ---- */
+  header { text-align: center; margin-bottom: clamp(2.4rem, 6vw, 3.6rem); }
+  .brand {
+    font-size: clamp(2.3rem, 8vw, 3.6rem);
+    letter-spacing: .34em;
+    font-weight: 500;
+    color: var(--gold);
+    margin: 0 0 .35rem;
+    text-indent: .34em;
+    line-height: 1;
+  }
+  .brand-sub {
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .5em;
+    font-size: .72rem;
+    color: var(--ink-soft);
+    text-indent: .5em;
+  }
+  .rule {
+    width: 46px; height: 1px; margin: 1.4rem auto;
+    background: var(--gold);
+    border: 0; opacity: .8;
+  }
+  .kicker { margin: 1rem 0 .4rem; }
+  .lede {
+    font-size: 1.08rem;
+    color: var(--ink-soft);
+    max-width: 48ch;
+    margin: .2rem auto 0;
+    text-wrap: balance;
+  }
+  .choose {
+    display: inline-block;
+    margin-top: 1.6rem;
+    padding: .55rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper-2);
+    font-size: .92rem;
+    color: var(--ink);
+  }
+  .choose b { color: var(--gold-deep); font-weight: 600; }
+
+  /* ---- Collections ---- */
+  .collections { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: clamp(1.5rem, 4vw, 2.2rem);
+    box-shadow: var(--shadow);
+  }
+  .card.featured { border-color: var(--gold); }
+  .flag {
+    position: absolute; top: -1px; right: 1.6rem;
+    transform: translateY(-50%);
+    background: var(--gold);
+    color: #fff;
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    text-transform: uppercase; letter-spacing: .16em;
+    font-size: .6rem; font-weight: 700;
+    padding: .3rem .7rem; border-radius: 999px;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .flag { color: #17130E; } }
+  :root[data-theme="dark"] .flag { color: #17130E; }
+
+  .card-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .c-name {
+    font-size: clamp(1.5rem, 4vw, 1.9rem);
+    margin: .1rem 0 0; font-weight: 500;
+  }
+  .price {
+    font-size: clamp(1.5rem, 4vw, 1.9rem);
+    color: var(--gold-deep); font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .tagline { color: var(--ink-soft); font-style: italic; margin: .15rem 0 1.3rem; }
+
+  /* film / photo split */
+  .split {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: .5rem;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1.3rem;
+  }
+  .opt { text-align: center; }
+  .opt .label { display: block; margin-bottom: .35rem; }
+  .opt p { margin: 0; font-size: .98rem; line-height: 1.45; }
+  .orb {
+    display: grid; place-items: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1px solid var(--line);
+    font-family: "Hoefler Text", Baskerville, Georgia, serif;
+    font-style: italic; color: var(--ink-soft);
+    font-size: .85rem; background: var(--card);
+  }
+  @media (max-width: 460px) {
+    .split { grid-template-columns: 1fr; }
+    .orb { margin: .1rem auto; }
+    .split .opt + .orb { order: 0; }
+  }
+
+  ul.incl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+  ul.incl li { position: relative; padding-left: 1.4rem; font-size: .98rem; }
+  ul.incl li::before {
+    content: ""; position: absolute; left: 0; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+  }
+
+  /* ---- Add-ons / footer ---- */
+  .addons {
+    margin-top: 2rem; padding: 1.6rem clamp(1.4rem, 4vw, 2.2rem);
+    border: 1px dashed var(--line); border-radius: 4px;
+    background: var(--paper-2);
+  }
+  .addons h3 { margin: 0 0 .3rem; }
+  .addons .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+  .chip {
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: .8rem; color: var(--ink);
+    padding: .32rem .8rem; border: 1px solid var(--line);
+    border-radius: 999px; background: var(--card);
+  }
+  .bundle { margin: .2rem 0 0; color: var(--ink-soft); font-size: .96rem; }
+  .bundle b { color: var(--gold-deep); font-weight: 600; font-style: normal; }
+
+  footer {
+    text-align: center; margin-top: 3rem;
+    padding-top: 2rem; border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+  footer .brand-mini { color: var(--gold); letter-spacing: .3em; font-size: 1rem; text-indent: .3em; }
+  footer a { color: var(--gold-deep); text-decoration: none; border-bottom: 1px solid var(--line); }
+  footer a:hover { border-color: var(--gold); }
+  footer .contact { margin-top: .6rem; font-size: .95rem; }
+
+  .fade { opacity: 0; transform: translateY(10px); animation: rise .7s ease forwards; }
+  .fade:nth-child(1){ animation-delay: .05s; }
+  .fade:nth-child(2){ animation-delay: .13s; }
+  .fade:nth-child(3){ animation-delay: .21s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade { animation: none; opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="brand display">ROCKWELL</h1>
+    <div class="brand-sub">Film &amp; Photo</div>
+    <hr class="rule" />
+    <div class="label kicker">Wedding Collections</div>
+    <p class="lede display">Timeless films and photography for couples who want their day remembered the way it felt.</p>
+    <div class="choose">Every collection is available as <b>Film</b> or <b>Photo</b> — choose your coverage.</div>
+  </header>
+
+  <main class="collections">
+
+    <!-- Essential -->
+    <section class="card fade">
+      <div class="card-head">
+        <h2 class="c-name display">The Essential Collection</h2>
+        <div class="price display">$1,800</div>
+      </div>
+      <p class="tagline">The core of your day, beautifully captured.</p>
+      <div class="split">
+        <div class="opt">
+          <span class="label">Film</span>
+          <p>Cinematic 2–3 minute highlight film</p>
+        </div>
+        <div class="orb">or</div>
+        <div class="opt">
+          <span class="label">Photo</span>
+          <p>250+ edited high-resolution images</p>
+        </div>
+      </div>
+      <ul class="incl">
+        <li>Up to 5 hours of wedding-day coverage</li>
+        <li>Ceremony &amp; reception coverage</li>
+        <li>Professionally edited &amp; color-graded</li>
+        <li>Online gallery for viewing, downloading &amp; sharing</li>
+      </ul>
+    </section>
+
+    <!-- Classic -->
+    <section class="card featured fade">
+      <span class="flag">Most Popular</span>
+      <div class="card-head">
+        <h2 class="c-name display">The Classic Collection</h2>
+        <div class="price display">$2,500</div>
+      </div>
+      <p class="tagline">More time, more of your story.</p>
+      <div class="split">
+        <div class="opt">
+          <span class="label">Film</span>
+          <p>Cinematic 4–6 minute highlight film</p>
+        </div>
+        <div class="orb">or</div>
+        <div class="opt">
+          <span class="label">Photo</span>
+          <p>500+ edited high-resolution images</p>
+        </div>
+      </div>
+      <ul class="incl">
+        <li>Up to 8 hours of wedding-day coverage</li>
+        <li>Getting ready, ceremony &amp; reception covered</li>
+        <li>Sneak-peek preview within a week</li>
+        <li>Licensed music &amp; full color grading</li>
+        <li>Aerial drone coverage (weather &amp; venue permitting)</li>
+        <li>Custom glass-engraved USB drive</li>
+        <li>Guest photo memories wall</li>
+        <li>Online gallery for viewing, downloading &amp; sharing</li>
+      </ul>
+    </section>
+
+    <!-- Signature -->
+    <section class="card fade">
+      <div class="card-head">
+        <h2 class="c-name display">The Signature Collection</h2>
+        <div class="price display">$3,800</div>
+      </div>
+      <p class="tagline">The full day, start to finish.</p>
+      <div class="split">
+        <div class="opt">
+          <span class="label">Film</span>
+          <p>Highlight film + extended feature film</p>
+        </div>
+        <div class="orb">or</div>
+        <div class="opt">
+          <span class="label">Photo</span>
+          <p>700+ edited high-resolution images</p>
+        </div>
+      </div>
+      <ul class="incl">
+        <li>Up to 10 hours of coverage — the full day</li>
+        <li>Getting ready, ceremony &amp; reception covered</li>
+        <li>Second shooter for extra angles &amp; moments</li>
+        <li>Full ceremony &amp; speeches, edited copy</li>
+        <li>Aerial drone coverage (weather &amp; venue permitting)</li>
+        <li>Licensed music &amp; full color grading</li>
+        <li>Sneak-peek preview within a week</li>
+        <li>Custom glass-engraved USB drive</li>
+        <li>Guest photo memories wall</li>
+        <li>Fine-art photo book</li>
+        <li>Online gallery for viewing, downloading &amp; sharing</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <section class="addons">
+    <div class="label">Make it yours</div>
+    <h3 class="display">Add-ons &amp; Custom Bundles</h3>
+    <p class="bundle">Want <b>both film and photo?</b> Ask about combining collections — custom bundles are always available.</p>
+    <div class="chips">
+      <span class="chip">Extra hours</span>
+      <span class="chip">Full ceremony edit</span>
+      <span class="chip">Full speech edit</span>
+      <span class="chip">Drone coverage</span>
+      <span class="chip">Raw footage</span>
+      <span class="chip">Additional shooters</span>
+      <span class="chip">Albums</span>
+    </div>
+  </section>
+
+  <footer>
+    <div class="brand-mini display">ROCKWELL</div>
+    <div class="contact">
+      <a href="https://rockwellfilmandphoto.com">rockwellfilmandphoto.com</a><br />
+      <a href="mailto:info@rockwellfilmandphoto.com">info@rockwellfilmandphoto.com</a>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
