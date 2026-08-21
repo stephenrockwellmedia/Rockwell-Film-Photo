@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Rockwell Film &amp; Photo — Book a Session</title>
+<title>Rockwell Film &amp; Photo — Event Booking</title>
 <meta name="robots" content="noindex" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -136,9 +136,9 @@
     <div class="brand">ROCKWELL</div>
     <div class="brand-sub">Film &amp; Photo</div>
     <hr class="rule" />
-    <div class="kicker">Booking Request</div>
+    <div class="kicker">Event Booking</div>
     <div class="title">Reserve Your Date</div>
-    <p class="lede">Pick a date, choose your window, and send your request. I'll confirm availability and follow up right away.</p>
+    <p class="lede">Pick a date, choose your window, and send your request. I'll confirm availability and <strong style="color:var(--cream);font-weight:500;">respond within 24 hours</strong>.</p>
   </header>
 
   <form id="bookForm">
@@ -190,8 +190,8 @@
         <input type="text" name="location" id="location" placeholder="City or venue (within 50 mi of Pittsburgh)" />
       </label>
       <label class="fld">
-        <span class="fld-label">Message / Event Details</span>
-        <textarea name="message" id="message" placeholder="Tell me about the event — what it's for, location, anything I should know."></textarea>
+        <span class="fld-label">Event Description</span>
+        <textarea name="message" id="message" placeholder="Tell me about the event — what it's for, the vibe, key moments, and anything I should know."></textarea>
       </label>
     </div>
 
@@ -339,7 +339,7 @@
         document.getElementById('bookForm').innerHTML =
           '<div class="card" style="text-align:center;padding:3rem 1.5rem;">'+
           '<div style="font-family:\'Cormorant Garamond\',serif;font-size:2rem;color:var(--gold-light);margin-bottom:0.6rem;">Request Sent ✓</div>'+
-          '<p style="color:var(--muted);line-height:1.6;">Thank you! Your request for <strong style="color:var(--cream)">'+payload.booking_date+'</strong> ('+payload.start_time+'–'+payload.end_time+') is in. I\'ll confirm availability and get back to you shortly.</p>'+
+          '<p style="color:var(--muted);line-height:1.6;">Thank you! Your request for <strong style="color:var(--cream)">'+payload.booking_date+'</strong> ('+payload.start_time+'–'+payload.end_time+') is in. I\'ll confirm availability and respond within 24 hours.</p>'+
           '</div>';
         window.scrollTo({top:0,behavior:'smooth'});
       } else {
