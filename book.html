@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rockwell Film &amp; Photo — Book a Session</title>
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0906;
+    --dark: #111009;
+    --mid: #1c1a14;
+    --warm-dark: #251f14;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f0e6d0;
+    --muted: #8a7f6a;
+    --white: #faf7f2;
+    --line: rgba(201,168,76,0.22);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(201,168,76,0.10), transparent 60%),
+      var(--black);
+    color: var(--cream);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: clamp(2.4rem,6vw,4.5rem) clamp(1.1rem,5vw,2rem) 4rem; }
+
+  header { text-align: center; margin-bottom: 2.6rem; }
+  .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.9rem, 6vw, 2.7rem);
+    letter-spacing: 0.32em; font-weight: 500;
+    color: var(--gold); text-indent: 0.32em; line-height: 1;
+  }
+  .brand-sub {
+    text-transform: uppercase; letter-spacing: 0.42em;
+    font-size: 0.62rem; color: var(--muted); margin-top: 0.6rem; text-indent: 0.42em;
+  }
+  .rule { width: 44px; height: 1px; background: var(--gold); opacity: 0.8; margin: 1.5rem auto; border: 0; }
+  .kicker { text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.66rem; font-weight: 600; color: var(--gold); margin-bottom: 0.5rem; }
+  .title { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.8rem,5vw,2.4rem); font-weight: 500; }
+  .lede { color: var(--muted); font-size: 0.95rem; max-width: 46ch; margin: 0.6rem auto 0; line-height: 1.6; }
+
+  .card {
+    background: linear-gradient(160deg, var(--warm-dark) 0%, var(--dark) 100%);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: clamp(1.4rem, 4vw, 2.1rem);
+    margin-bottom: 1.4rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
+  .card-label { text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.62rem; font-weight: 600; color: var(--gold); margin-bottom: 1.1rem; }
+
+  /* Calendar */
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .cal-month { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 500; color: var(--cream); }
+  .cal-nav { display: flex; gap: 0.5rem; }
+  .cal-nav button {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+    color: var(--cream); font-size: 1rem; cursor: pointer; transition: all 0.2s;
+    display: grid; place-items: center;
+  }
+  .cal-nav button:hover:not(:disabled) { background: rgba(201,168,76,0.14); border-color: var(--gold); }
+  .cal-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-dow { text-align: center; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding-bottom: 0.5rem; }
+  .cal-day {
+    aspect-ratio: 1; display: grid; place-items: center;
+    border-radius: 4px; font-size: 0.9rem; cursor: pointer;
+    border: 1px solid transparent; color: var(--cream);
+    transition: all 0.15s; background: rgba(255,255,255,0.02);
+  }
+  .cal-day:hover:not(.empty):not(.past) { border-color: var(--gold); color: var(--gold-light); }
+  .cal-day.empty { background: none; cursor: default; }
+  .cal-day.past { color: #4a4438; cursor: not-allowed; background: none; }
+  .cal-day.selected { background: var(--gold); color: var(--black); font-weight: 600; border-color: var(--gold); }
+  .cal-day.today:not(.selected) { border-color: rgba(201,168,76,0.5); }
+
+  /* Time + fields */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
+  label.fld { display: block; }
+  .fld-label { display: block; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.6rem; font-weight: 600; color: var(--muted); margin-bottom: 0.5rem; }
+  select, input[type=email], textarea {
+    width: 100%; font-family: 'Montserrat', sans-serif; font-size: 0.9rem;
+    color: var(--cream); background: rgba(255,255,255,0.05);
+    border: 1px solid var(--line); border-radius: 3px; padding: 12px 14px; outline: none;
+    transition: border-color 0.2s;
+  }
+  select:focus, input:focus, textarea:focus { border-color: var(--gold); }
+  select option { background: var(--dark); color: var(--cream); }
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* Estimate */
+  .estimate {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem;
+    background: rgba(201,168,76,0.07); border: 1px solid var(--line);
+    border-radius: 5px; padding: 1.1rem 1.3rem;
+  }
+  .estimate .lbl { text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.62rem; font-weight: 600; color: var(--gold); }
+  .estimate .amt { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 500; color: var(--gold-light); font-variant-numeric: tabular-nums; }
+  .estimate .note { width: 100%; font-size: 0.72rem; color: var(--muted); }
+  .rate-note { font-size: 0.74rem; color: var(--muted); margin-top: 0.8rem; text-align: center; }
+
+  .submit-btn {
+    width: 100%; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--black);
+    background: var(--gold); border: none; border-radius: 3px; padding: 17px; cursor: pointer;
+    transition: background 0.2s; margin-top: 0.4rem;
+  }
+  .submit-btn:hover { background: var(--gold-light); }
+  .submit-btn:disabled { opacity: 0.6; cursor: default; }
+
+  .msg { text-align: center; padding: 1rem; border-radius: 4px; margin-top: 1rem; font-size: 0.85rem; display: none; }
+  .msg.err { display: block; background: rgba(180,60,50,0.12); border: 1px solid rgba(180,60,50,0.4); color: #e8a99f; }
+  .msg.ok { display: block; background: rgba(201,168,76,0.12); border: 1px solid var(--line); color: var(--gold-light); }
+
+  footer { text-align: center; margin-top: 2.6rem; padding-top: 1.6rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; }
+  footer .bm { font-family: 'Cormorant Garamond', serif; color: var(--gold); letter-spacing: 0.28em; font-size: 1rem; text-indent: 0.28em; }
+  footer a { color: var(--gold); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">ROCKWELL</div>
+    <div class="brand-sub">Film &amp; Photo</div>
+    <hr class="rule" />
+    <div class="kicker">Booking Request</div>
+    <div class="title">Reserve Your Date</div>
+    <p class="lede">Pick a date, choose your window, and send your request. I'll confirm availability and follow up right away.</p>
+  </header>
+
+  <form id="bookForm">
+    <!-- Calendar -->
+    <div class="card">
+      <div class="card-label">Select a Date</div>
+      <div class="cal-head">
+        <button type="button" class="cal-month-btn" style="display:none"></button>
+        <div class="cal-month" id="calMonth"></div>
+        <div class="cal-nav">
+          <button type="button" id="calPrev" aria-label="Previous month">‹</button>
+          <button type="button" id="calNext" aria-label="Next month">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calDow"></div>
+      <div class="cal-grid" id="calDays" style="margin-top:4px;"></div>
+    </div>
+
+    <!-- Time window -->
+    <div class="card">
+      <div class="card-label">Choose Your Window</div>
+      <div class="row">
+        <label class="fld">
+          <span class="fld-label">Start Time</span>
+          <select id="startTime"></select>
+        </label>
+        <label class="fld">
+          <span class="fld-label">End Time</span>
+          <select id="endTime"></select>
+        </label>
+      </div>
+      <div class="estimate" style="margin-top:1.3rem;">
+        <span class="lbl">Estimated Cost</span>
+        <span class="amt" id="estAmount">$240</span>
+        <span class="note" id="estNote">2 hours &times; $120/hr</span>
+      </div>
+      <p class="rate-note">Rate: <strong style="color:var(--cream)">$120 / hour</strong> &nbsp;·&nbsp; 2-hour minimum. Final quote confirmed on reply.</p>
+    </div>
+
+    <!-- Contact -->
+    <div class="card">
+      <div class="card-label">Your Details</div>
+      <label class="fld" style="margin-bottom:1.1rem;">
+        <span class="fld-label">Your Email</span>
+        <input type="email" name="email" id="email" placeholder="you@email.com" required />
+      </label>
+      <label class="fld">
+        <span class="fld-label">Message / Event Details</span>
+        <textarea name="message" id="message" placeholder="Tell me about the event — what it's for, location, anything I should know."></textarea>
+      </label>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Send Booking Request</button>
+    <div class="msg" id="formMsg"></div>
+  </form>
+
+  <footer>
+    <div class="bm">ROCKWELL</div>
+    <div style="margin-top:0.5rem;"><a href="https://rockwellfilmandphoto.com">rockwellfilmandphoto.com</a> · (412) 292-5355</div>
+  </footer>
+</div>
+
+<script>
+  const FORMSPREE = 'https://formspree.io/f/xqpzjezn';
+  const RATE = 120, MIN_HOURS = 2;
+
+  // ── Calendar ──
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dow = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let view = new Date(); view.setDate(1);
+  let selected = null;
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const dowEl = document.getElementById('calDow');
+  dow.forEach(d => { const c = document.createElement('div'); c.className='cal-dow'; c.textContent=d; dowEl.appendChild(c); });
+
+  function fmtDate(d){ return monthNames[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); }
+  function sameDay(a,b){ return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+
+  function renderCal(){
+    document.getElementById('calMonth').textContent = monthNames[view.getMonth()]+' '+view.getFullYear();
+    const days = document.getElementById('calDays');
+    days.innerHTML = '';
+    const first = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
+    const total = new Date(view.getFullYear(), view.getMonth()+1, 0).getDate();
+    for(let i=0;i<first;i++){ const e=document.createElement('div'); e.className='cal-day empty'; days.appendChild(e); }
+    for(let d=1; d<=total; d++){
+      const cell = document.createElement('div');
+      cell.className = 'cal-day';
+      cell.textContent = d;
+      const date = new Date(view.getFullYear(), view.getMonth(), d);
+      if(sameDay(date, today)) cell.classList.add('today');
+      if(date < today){ cell.classList.add('past'); }
+      else {
+        cell.addEventListener('click', () => {
+          selected = date;
+          renderCal();
+          updateEstimate();
+        });
+      }
+      if(sameDay(date, selected)) cell.classList.add('selected');
+      days.appendChild(cell);
+    }
+    // disable prev nav if it would go before this month
+    const prevBtn = document.getElementById('calPrev');
+    const atCurrent = view.getFullYear()===today.getFullYear() && view.getMonth()===today.getMonth();
+    prevBtn.disabled = atCurrent;
+  }
+  document.getElementById('calPrev').addEventListener('click', ()=>{ view.setMonth(view.getMonth()-1); renderCal(); });
+  document.getElementById('calNext').addEventListener('click', ()=>{ view.setMonth(view.getMonth()+1); renderCal(); });
+
+  // ── Times ──
+  const startSel = document.getElementById('startTime');
+  const endSel = document.getElementById('endTime');
+  const times = [];
+  for(let m = 7*60; m <= 22*60; m += 30){ times.push(m); }
+  function label(mins){
+    let h = Math.floor(mins/60), mm = mins%60;
+    const ap = h >= 12 ? 'PM' : 'AM';
+    let h12 = h % 12; if(h12===0) h12 = 12;
+    return h12 + ':' + String(mm).padStart(2,'0') + ' ' + ap;
+  }
+  times.forEach(t => {
+    const o1 = document.createElement('option'); o1.value=t; o1.textContent=label(t); startSel.appendChild(o1);
+    const o2 = document.createElement('option'); o2.value=t; o2.textContent=label(t); endSel.appendChild(o2);
+  });
+  startSel.value = 10*60;      // 10:00 AM
+  endSel.value = 12*60;        // 12:00 PM
+
+  function updateEstimate(){
+    let s = parseInt(startSel.value,10), e = parseInt(endSel.value,10);
+    let hours = (e - s)/60;
+    const amtEl = document.getElementById('estAmount');
+    const noteEl = document.getElementById('estNote');
+    if(hours <= 0){
+      amtEl.textContent = '—';
+      noteEl.textContent = 'End time must be after start time';
+      return NaN;
+    }
+    const billed = Math.max(MIN_HOURS, hours);
+    const cost = billed * RATE;
+    amtEl.textContent = '$' + cost.toLocaleString();
+    const hrLabel = (hours % 1 === 0) ? hours : hours.toFixed(1);
+    const billLabel = (billed % 1 === 0) ? billed : billed.toFixed(1);
+    noteEl.innerHTML = hours < MIN_HOURS
+      ? `${hrLabel} hr requested — <strong style="color:var(--gold-light)">2-hr minimum applies</strong> (${billLabel} hr &times; $120)`
+      : `${billLabel} hours &times; $120/hr`;
+    return cost;
+  }
+  startSel.addEventListener('change', updateEstimate);
+  endSel.addEventListener('change', updateEstimate);
+
+  renderCal();
+  updateEstimate();
+
+  // ── Submit ──
+  document.getElementById('bookForm').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const msg = document.getElementById('formMsg');
+    const btn = document.getElementById('submitBtn');
+    msg.className = 'msg';
+
+    if(!selected){ msg.className='msg err'; msg.textContent='Please pick a date on the calendar.'; return; }
+    const s = parseInt(startSel.value,10), e = parseInt(endSel.value,10);
+    if(e <= s){ msg.className='msg err'; msg.textContent='End time must be after the start time.'; return; }
+    const email = document.getElementById('email').value.trim();
+    if(!email){ msg.className='msg err'; msg.textContent='Please enter your email.'; return; }
+
+    const hours = (e - s)/60;
+    const billed = Math.max(MIN_HOURS, hours);
+    const cost = billed * RATE;
+
+    const payload = {
+      email,
+      message: document.getElementById('message').value,
+      booking_date: fmtDate(selected),
+      start_time: label(s),
+      end_time: label(e),
+      hours_requested: hours,
+      hours_billed: billed,
+      estimated_cost: '$' + cost.toLocaleString(),
+      _subject: `Booking request: ${fmtDate(selected)}, ${label(s)}–${label(e)} ($${cost.toLocaleString()})`
+    };
+
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const res = await fetch(FORMSPREE, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if(res.ok){
+        document.getElementById('bookForm').innerHTML =
+          '<div class="card" style="text-align:center;padding:3rem 1.5rem;">'+
+          '<div style="font-family:\'Cormorant Garamond\',serif;font-size:2rem;color:var(--gold-light);margin-bottom:0.6rem;">Request Sent ✓</div>'+
+          '<p style="color:var(--muted);line-height:1.6;">Thank you! Your request for <strong style="color:var(--cream)">'+payload.booking_date+'</strong> ('+payload.start_time+'–'+payload.end_time+') is in. I\'ll confirm availability and get back to you shortly.</p>'+
+          '</div>';
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else {
+        msg.className='msg err'; msg.textContent='Something went wrong. Please try again or text (412) 292-5355.';
+        btn.disabled=false; btn.textContent='Send Booking Request';
+      }
+    } catch(err){
+      msg.className='msg err'; msg.textContent='Network error. Please try again or text (412) 292-5355.';
+      btn.disabled=false; btn.textContent='Send Booking Request';
+    }
+  });
+</script>
+</body>
+</html>
