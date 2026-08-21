@@ -91,7 +91,7 @@
   @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
   label.fld { display: block; }
   .fld-label { display: block; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.6rem; font-weight: 600; color: var(--muted); margin-bottom: 0.5rem; }
-  select, input[type=email], textarea {
+  select, input[type=email], input[type=text], textarea {
     width: 100%; font-family: 'Montserrat', sans-serif; font-size: 0.9rem;
     color: var(--cream); background: rgba(255,255,255,0.05);
     border: 1px solid var(--line); border-radius: 3px; padding: 12px 14px; outline: none;
@@ -175,7 +175,7 @@
         <span class="amt" id="estAmount">$240</span>
         <span class="note" id="estNote">2 hours &times; $120/hr</span>
       </div>
-      <p class="rate-note">Rate: <strong style="color:var(--cream)">$120 / hour</strong> &nbsp;·&nbsp; 2-hour minimum. Final quote confirmed on reply.</p>
+      <p class="rate-note">Rate: <strong style="color:var(--cream)">$120 / hour</strong> &nbsp;·&nbsp; 2-hour minimum &nbsp;·&nbsp; Travel included within <strong style="color:var(--cream)">50 miles of Pittsburgh</strong>. Final quote confirmed on reply.</p>
     </div>
 
     <!-- Contact -->
@@ -184,6 +184,10 @@
       <label class="fld" style="margin-bottom:1.1rem;">
         <span class="fld-label">Your Email</span>
         <input type="email" name="email" id="email" placeholder="you@email.com" required />
+      </label>
+      <label class="fld" style="margin-bottom:1.1rem;">
+        <span class="fld-label">Event Location</span>
+        <input type="text" name="location" id="location" placeholder="City or venue (within 50 mi of Pittsburgh)" />
       </label>
       <label class="fld">
         <span class="fld-label">Message / Event Details</span>
@@ -313,6 +317,7 @@
 
     const payload = {
       email,
+      location: document.getElementById('location').value,
       message: document.getElementById('message').value,
       booking_date: fmtDate(selected),
       start_time: label(s),
