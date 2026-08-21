@@ -194,9 +194,9 @@
       <div class="estimate" style="margin-top:1.3rem;">
         <span class="lbl">Estimated Cost</span>
         <span class="amt" id="estAmount">$240</span>
-        <span class="note" id="estNote">2 hours &times; $120/hr</span>
+        <span class="note" id="estNote">2 hours &times; $150/hr</span>
       </div>
-      <p class="rate-note">Rate: <strong style="color:var(--cream)">$120 / hour</strong> &nbsp;·&nbsp; 2-hour minimum &nbsp;·&nbsp; Travel included within <strong style="color:var(--cream)">50 miles of Pittsburgh</strong>. Final quote confirmed on reply.</p>
+      <p class="rate-note">Rate: <strong style="color:var(--cream)">$150 / hour</strong> &nbsp;·&nbsp; 2-hour minimum &nbsp;·&nbsp; Travel included within <strong style="color:var(--cream)">50 miles of Pittsburgh</strong>. Final quote confirmed on reply.</p>
     </div>
 
     <!-- Contact -->
@@ -234,7 +234,7 @@
 
 <script>
   const FORMSPREE = 'https://formspree.io/f/xqpzjezn';
-  const RATE = 120, MIN_HOURS = 2;
+  const RATE = 150, MIN_HOURS = 2;
 
   // ── Calendar ──
   const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -315,8 +315,8 @@
     const hrLabel = (hours % 1 === 0) ? hours : hours.toFixed(1);
     const billLabel = (billed % 1 === 0) ? billed : billed.toFixed(1);
     noteEl.innerHTML = hours < MIN_HOURS
-      ? `${hrLabel} hr requested — <strong style="color:var(--gold-light)">2-hr minimum applies</strong> (${billLabel} hr &times; $120)`
-      : `${billLabel} hours &times; $120/hr`;
+      ? `${hrLabel} hr requested — <strong style="color:var(--gold-light)">2-hr minimum applies</strong> (${billLabel} hr &times; $150)`
+      : `${billLabel} hours &times; $150/hr`;
     return cost;
   }
   startSel.addEventListener('change', updateEstimate);
