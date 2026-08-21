@@ -91,7 +91,7 @@
   @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
   label.fld { display: block; }
   .fld-label { display: block; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.6rem; font-weight: 600; color: var(--muted); margin-bottom: 0.5rem; }
-  select, input[type=email], input[type=text], textarea {
+  select, input[type=email], input[type=text], input[type=tel], textarea {
     width: 100%; font-family: 'Montserrat', sans-serif; font-size: 0.9rem;
     color: var(--cream); background: rgba(255,255,255,0.05);
     border: 1px solid var(--line); border-radius: 3px; padding: 12px 14px; outline: none;
@@ -181,10 +181,16 @@
     <!-- Contact -->
     <div class="card">
       <div class="card-label">Your Details</div>
-      <label class="fld" style="margin-bottom:1.1rem;">
-        <span class="fld-label">Your Email</span>
-        <input type="email" name="email" id="email" placeholder="you@email.com" required />
-      </label>
+      <div class="row" style="margin-bottom:1.1rem;">
+        <label class="fld">
+          <span class="fld-label">Your Email</span>
+          <input type="email" name="email" id="email" placeholder="you@email.com" required />
+        </label>
+        <label class="fld">
+          <span class="fld-label">Phone Number</span>
+          <input type="tel" name="phone" id="phone" placeholder="(412) 555-1234" required />
+        </label>
+      </div>
       <label class="fld" style="margin-bottom:1.1rem;">
         <span class="fld-label">Event Location</span>
         <input type="text" name="location" id="location" placeholder="City or venue (within 50 mi of Pittsburgh)" />
@@ -310,6 +316,8 @@
     if(e <= s){ msg.className='msg err'; msg.textContent='End time must be after the start time.'; return; }
     const email = document.getElementById('email').value.trim();
     if(!email){ msg.className='msg err'; msg.textContent='Please enter your email.'; return; }
+    const phone = document.getElementById('phone').value.trim();
+    if(!phone){ msg.className='msg err'; msg.textContent='Please enter your phone number.'; return; }
 
     const hours = (e - s)/60;
     const billed = Math.max(MIN_HOURS, hours);
@@ -317,6 +325,7 @@
 
     const payload = {
       email,
+      phone,
       location: document.getElementById('location').value,
       message: document.getElementById('message').value,
       booking_date: fmtDate(selected),
