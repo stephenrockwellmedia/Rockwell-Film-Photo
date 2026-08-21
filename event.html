@@ -156,9 +156,9 @@
     <hr class="rule" />
     <div class="kicker">Event Booking</div>
     <div class="title">Reserve Your Date</div>
-    <p class="lede">Pick a date, choose your window, and send your request.</p>
+    <p class="lede">Pick a date, choose your window, and send your request. If approved, a booking link is sent to confirm and reserve your date.</p>
     <div class="respond-badge">
-      <span class="dot"></span> I respond within <strong>24 hours</strong>
+      <span class="dot"></span> Response within <strong>24 hours</strong>
     </div>
   </header>
 
@@ -369,7 +369,7 @@
         document.getElementById('bookForm').innerHTML =
           '<div class="card" style="text-align:center;padding:3rem 1.5rem;">'+
           '<div style="font-family:\'Cormorant Garamond\',serif;font-size:2rem;color:var(--gold-light);margin-bottom:0.6rem;">Request Sent ✓</div>'+
-          '<p style="color:var(--muted);line-height:1.6;">Thank you! Your request for <strong style="color:var(--cream)">'+payload.booking_date+'</strong> ('+payload.start_time+'–'+payload.end_time+') is in. I\'ll confirm availability and respond within 24 hours.</p>'+
+          '<p style="color:var(--muted);line-height:1.6;">Thank you! Your request for <strong style="color:var(--cream)">'+payload.booking_date+'</strong> ('+payload.start_time+'–'+payload.end_time+') is in. You\'ll get a response within 24 hours — if approved, a booking link will be sent to confirm and reserve your date.</p>'+
           '</div>';
         window.scrollTo({top:0,behavior:'smooth'});
       } else {
