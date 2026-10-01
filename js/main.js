@@ -572,14 +572,14 @@
   /* ── REELS — R2 hardcoded ── */
   const R2 = 'https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev';
   const reelsData = [
+    { name: 'Abby & Eric',     file: 'Abby & Eric Reel.mp4' },
+    { name: 'Bri & Joel',      file: 'Bri & Joel Reel.mp4' },
     { name: 'Corry & Caitlyn', file: 'Corry and Cat Reel.mp4' },
     { name: 'Julia & Sam',     file: 'Julia and Sam Short.mp4' },
     { name: 'Zach & Bailey',   file: 'Zach & Bailey Reel.mp4' },
     { name: 'Mariah & Troy',   file: 'Preview wedding Reel.mp4' },
     { name: 'Paige & Frank',   file: 'Pagie and Frank Short.mp4' },
     { name: 'Matt & Kayla',    file: 'Matt and Kayla-.mp4' },
-    { name: 'Abby & Eric',     file: 'Abby & Eric Reel.mp4' },
-    { name: 'Bri & Joel',      file: 'Bri & Joel Reel.mp4' },
     { name: 'Kaitlyn & Dylan', file: 'Kaitlyn & Dylan.mp4' },
   ];
 
