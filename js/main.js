@@ -578,6 +578,9 @@
     { name: 'Mariah & Troy',   file: 'Preview wedding Reel.mp4' },
     { name: 'Paige & Frank',   file: 'Pagie and Frank Short.mp4' },
     { name: 'Matt & Kayla',    file: 'Matt and Kayla-.mp4' },
+    { name: 'Abby & Eric',     file: 'Abby & Eric Reel.mp4' },
+    { name: 'Bri & Joel',      file: 'Bri & Joel Reel.mp4' },
+    { name: 'Kaitlyn & Dylan', file: 'Kaitlyn & Dylan.mp4' },
   ];
 
   const buildReelUrl = (reel) => `${R2}/Reels/${encodeURIComponent(reel.file)}`;
