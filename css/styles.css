@@ -1985,12 +1985,11 @@
     .hero-scroll { display: none; }
     .hero-title { font-weight: 600; }
 
-    /* Mobile hero order: buttons first, tagline below them */
+    /* Mobile hero: hide the buttons (sticky bottom bar has the CTAs) */
     .hero-content { display: flex; flex-direction: column; align-items: center; width: 100%; }
-    .hero-buttons { order: 1; margin-top: 0; }
+    .hero-buttons { display: none; }
     .hero-tagline {
-      order: 2;
-      margin-top: 22px;
+      margin-top: 0;
       background: rgba(10,9,6,0.45);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
