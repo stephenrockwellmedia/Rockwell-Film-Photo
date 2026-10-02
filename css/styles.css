@@ -1979,8 +1979,12 @@
 
     #home {
       height: 100svh;
-      padding: calc(var(--banner-h) + 110px) 24px clamp(60px, 12vh, 120px) !important;
+      padding: calc(var(--banner-h) + 110px) 24px clamp(28px, 6vh, 60px) !important;
       align-items: flex-end;
+    }
+    /* Lighter overlay on mobile so the video reads truer */
+    .hero-bg {
+      background: linear-gradient(to bottom, rgba(10,9,6,0.32) 0%, rgba(10,9,6,0.12) 40%, rgba(10,9,6,0.5) 100%);
     }
     .hero-scroll { display: none; }
     .hero-title { font-weight: 600; }
