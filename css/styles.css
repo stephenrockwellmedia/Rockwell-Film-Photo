@@ -320,6 +320,7 @@
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    background: var(--black);
   }
 
   .hero-bg {
