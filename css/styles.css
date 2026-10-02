@@ -306,10 +306,11 @@
     position: relative;
     height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     overflow: hidden;
     padding-top: calc(var(--banner-h) + 180px);
+    padding-bottom: clamp(70px, 14vh, 150px);
   }
 
   .hero-video {
@@ -419,11 +420,9 @@
     animation: fadeUp 1s 1.7s forwards;
   }
 
-  /* On shorter viewports, top-align the hero so the title doesn't get
-     pushed up into the nav, and hide the SCROLL indicator since it
-     starts crowding the buttons. */
+  /* Hide the SCROLL indicator on shorter viewports since it starts
+     crowding the buttons. */
   @media (max-height: 950px) {
-    #home { align-items: flex-start; }
     .hero-scroll { display: none; }
   }
 
@@ -1980,8 +1979,8 @@
 
     #home {
       height: 100svh;
-      padding: calc(var(--banner-h) + 110px) 24px 80px !important;
-      align-items: flex-start;
+      padding: calc(var(--banner-h) + 110px) 24px clamp(60px, 12vh, 120px) !important;
+      align-items: flex-end;
     }
     .hero-scroll { display: none; }
     .hero-title { font-weight: 600; }
