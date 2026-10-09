@@ -2004,9 +2004,8 @@
       gap: 6px;
       position: absolute;
       z-index: 4;
-      top: 46%;
-      right: 14px;
-      transform: translateY(-50%);
+      bottom: 92px;
+      left: 14px;
       background: rgba(10,9,6,0.5);
       color: var(--cream);
       border: 1px solid rgba(240,230,208,0.4);
