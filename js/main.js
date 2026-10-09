@@ -576,6 +576,7 @@
     { name: 'Bri & Joel',      file: 'Bri & Joel Reel.mp4' },
     { name: 'Lizzie & Brandon',file: 'Lizzie & Brandon.mp4' },
     { name: 'Corry & Caitlyn', file: 'Corry and Cat Reel.mp4' },
+    { name: 'Megan & Jon',     file: 'Megan & Jon.mp4' },
     { name: 'Julia & Sam',     file: 'Julia and Sam Short.mp4' },
     { name: 'Zach & Bailey',   file: 'Zach & Bailey Reel.mp4' },
     { name: 'Mariah & Troy',   file: 'Preview wedding Reel.mp4' },

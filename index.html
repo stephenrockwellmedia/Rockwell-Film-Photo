@@ -108,9 +108,8 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<!-- Speed up hero media: connect to R2 early, preload the video -->
+<!-- Speed up hero media: connect to R2 early (source chosen per-device via JS) -->
 <link rel="preconnect" href="https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev" crossorigin />
-<link rel="preload" as="video" href="https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/Hero/Hero%20VideoW.mp4" type="video/mp4" fetchpriority="high" />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css" />
 
@@ -175,9 +174,19 @@
 
 <!-- ── HERO ── -->
 <section id="home">
-  <video class="hero-video" autoplay muted loop playsinline preload="auto">
-    <source src="https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/Hero/Hero%20VideoW.mp4#t=0.001" type="video/mp4">
-  </video>
+  <video class="hero-video" autoplay muted loop playsinline preload="auto"></video>
+  <script>
+    (function () {
+      var v = document.querySelector('.hero-video');
+      var base = 'https://pub-c5287f1b50564f8680b9e8721ae173aa.r2.dev/';
+      var isMobile = window.matchMedia('(max-width: 900px)').matches;
+      var url = isMobile
+        ? base + 'Reels/Hero%20Reel%20phone.mp4'   // vertical phone cut
+        : base + 'Hero/Hero%20VideoW.mp4';          // widescreen desktop cut
+      v.src = url + '#t=0.001';
+      v.load();
+    })();
+  </script>
   <div class="hero-bg"></div>
   <h1 class="visually-hidden">Rockwell Film &amp; Photo — Pittsburgh Wedding Videographer &amp; Photographer Serving PA, WV, OH &amp; MD</h1>
   <div class="hero-content">
