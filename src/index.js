@@ -38,7 +38,7 @@ async function createPaymentIntent(request, env) {
     }
 
     const body = await request.json();
-    const { clientName, clientEmail, amountCents, fullTotalCents, isDeposit, description, invoiceNo, weddingDate } = body || {};
+    const { clientName, clientEmail, clientPhone, amountCents, fullTotalCents, isDeposit, description, invoiceNo, weddingDate } = body || {};
 
     if (!amountCents || amountCents < 50) return json({ error: 'Amount must be at least $0.50' }, 400);
     if (!clientEmail || !clientName)     return json({ error: 'Client name and email required' }, 400);
@@ -52,6 +52,7 @@ async function createPaymentIntent(request, env) {
       'metadata[invoice_no]': invoiceNo || '',
       'metadata[client_name]': clientName,
       'metadata[client_email]': clientEmail,
+      'metadata[client_phone]': clientPhone || '',
       'metadata[line_description]': description || 'Wedding Services',
       'metadata[wedding_date]': weddingDate || '',
       'metadata[full_total_cents]': String(fullTotalCents || amountCents),
