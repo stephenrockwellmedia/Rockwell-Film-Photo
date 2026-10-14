@@ -38,7 +38,7 @@ async function createPaymentIntent(request, env) {
     }
 
     const body = await request.json();
-    const { clientName, clientEmail, clientPhone, amountCents, fullTotalCents, isDeposit, description, invoiceNo, weddingDate } = body || {};
+    const { clientName, clientEmail, clientPhone, amountCents, fullTotalCents, isDeposit, description, invoiceNo, weddingDate, balanceDueDays } = body || {};
 
     if (!amountCents || amountCents < 50) return json({ error: 'Amount must be at least $0.50' }, 400);
     if (!clientEmail || !clientName)     return json({ error: 'Client name and email required' }, 400);
@@ -57,6 +57,7 @@ async function createPaymentIntent(request, env) {
       'metadata[wedding_date]': weddingDate || '',
       'metadata[full_total_cents]': String(fullTotalCents || amountCents),
       'metadata[is_deposit]': isDeposit ? 'true' : 'false',
+      'metadata[balance_due_days]': String(balanceDueDays || 30),
     });
 
     const stripeRes = await fetch('https://api.stripe.com/v1/payment_intents', {
@@ -115,6 +116,7 @@ async function getInvoice(url, env) {
       contractVenue: pi.metadata?.contract_venue || '',
       fullTotalCents: parseInt(pi.metadata?.full_total_cents || pi.amount, 10),
       isDeposit: pi.metadata?.is_deposit === 'true',
+      balanceDueDays: parseInt(pi.metadata?.balance_due_days || '30', 10),
     });
   } catch (err) {
     return json({ error: err.message || 'get failed' }, 500);
